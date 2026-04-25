@@ -92,7 +92,10 @@ export function getCategoryFromQuestionId(questionId: string): string {
 
   // Spring questions by prefix
   if (questionId.startsWith("spring-boot")) return "spring-boot";
-  if (questionId.startsWith("spring-data") || questionId.startsWith("spring-jpa"))
+  if (
+    questionId.startsWith("spring-data") ||
+    questionId.startsWith("spring-jpa")
+  )
     return "spring-data";
   if (questionId.startsWith("spring-sec")) return "spring-security";
   if (

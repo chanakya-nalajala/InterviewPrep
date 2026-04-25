@@ -44,7 +44,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, []);
 
-  const login = () => signInWithPopup(auth, googleProvider);
+  const login = async () => {
+    try {
+      return await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      // Re-throw the error so Login component can handle it
+      throw error;
+    }
+  };
+
   const logout = () => signOut(auth);
 
   return (
