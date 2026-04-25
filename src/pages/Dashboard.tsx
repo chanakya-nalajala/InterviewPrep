@@ -10,7 +10,7 @@ import {
   TopicSection,
 } from "../data/types";
 import { StatCard } from "../components/StatCard.tsx";
-import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
+import { SkeletonCard, SkeletonStat } from "../components/SkeletonLoader";
 import {
   getAllQuestionsWithCategories,
   getOrganizedCategories,
@@ -22,6 +22,8 @@ import { CategoryCard } from "../components/CategoryCard";
 import { SectionCard } from "../components/SectionCard";
 import { QuestionsList } from "../components/QuestionsList";
 import { exportSectionToPDF } from "../services/pdfExport";
+import { NoResults } from "../components/EmptyState";
+import { Confetti, SuccessMessage } from "../components/Confetti";
 
 // Time-based greeting helper
 function getTimeOfDay(): string {
@@ -80,6 +82,9 @@ export default function Dashboard() {
   );
   const [visibleHints, setVisibleHints] = useState<Set<string>>(new Set());
   const [exportingPDF, setExportingPDF] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState("");
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Get categories and question counts dynamically from JSON
   const categories = useMemo(() => getOrganizedCategories(), []);
@@ -168,6 +173,124 @@ export default function Dashboard() {
   const goBack = () => {
     if (selectedSection) setSelectedSection(null);
     else if (selectedCategory) setSelectedCategory(null);
+  };
+
+  // Celebration trigger function
+  const triggerCelebration = (message: string) => {
+    setShowConfetti(true);
+    setCelebrationMessage(message);
+    setShowCelebration(true);
+
+    // Hide celebration message after 3 seconds
+    setTimeout(() => {
+      setShowCelebration(false);
+    }, 3000);
+
+    // Reset confetti trigger after animation completes
+    setTimeout(() => {
+      setShowConfetti(false);
+    }, 3500);
+  };
+
+  // Wrapped progress update with celebration check
+  const handleProgressUpdate = async (
+    id: string,
+    status: QuestionStatus,
+    confidence: number,
+  ) => {
+    // Get current done count before update
+    const currentDoneCount = stats.done;
+
+    // Check if this question was already done
+    const wasAlreadyDone = safeGetStatus(id) === "done";
+
+    // Update the progress
+    await safeUpdateProgress(id, status, confidence);
+
+    // Celebrate EVERY question marked as done!
+    if (status === "done" && !wasAlreadyDone) {
+      const newDoneCount = currentDoneCount + 1;
+
+      // Choose message based on milestone
+      let celebrationMessage: string;
+
+      if (currentDoneCount === 0) {
+        celebrationMessage = "🎯 First One Down! You're on fire!";
+      } else if (newDoneCount % 10 === 0) {
+        celebrationMessage = `🚀 ${newDoneCount} Questions! You're crushing it!`;
+      } else if (newDoneCount % 5 === 0) {
+        celebrationMessage = `⚡ ${newDoneCount} Done! Keep going!`;
+      } else {
+        const messages = [
+          "Awesome! 🎉",
+          "Nailed it! ✨",
+          "You're on fire! 🔥",
+          "Keep it up! 💪",
+          "Fantastic! 🌟",
+          "Well done! 👏",
+        ];
+        celebrationMessage =
+          messages[Math.floor(Math.random() * messages.length)];
+      }
+
+      triggerCelebration(celebrationMessage);
+
+      // Also check for section/category completion with delay
+      if (selectedSection) {
+        setTimeout(() => {
+          const allQuestionsInSection = [
+            ...selectedSection.interviewQuestions,
+            ...selectedSection.scenarioQuestions,
+          ];
+          const completedInSection = allQuestionsInSection.filter(
+            (q) => safeGetStatus(q.id) === "done",
+          ).length;
+
+          // Section complete?
+          if (completedInSection === allQuestionsInSection.length) {
+            // Check if entire category is complete
+            if (selectedCategory) {
+              let allSectionsComplete = true;
+              for (const section of selectedCategory.sections) {
+                const allQs = [
+                  ...section.interviewQuestions,
+                  ...section.scenarioQuestions,
+                ];
+                const doneQs = allQs.filter(
+                  (q) => safeGetStatus(q.id) === "done",
+                ).length;
+                if (doneQs < allQs.length) {
+                  allSectionsComplete = false;
+                  break;
+                }
+              }
+
+              if (allSectionsComplete) {
+                console.log(
+                  `🏆 EXTRA CELEBRATION: Category "${selectedCategory.name}" Complete!`,
+                );
+                // Trigger another celebration for category completion
+                setTimeout(() => {
+                  triggerCelebration(
+                    `🏆 INCREDIBLE! Category "${selectedCategory.name}" Complete!`,
+                  );
+                }, 1000);
+              } else {
+                console.log(
+                  `✨ EXTRA CELEBRATION: Section "${selectedSection.name}" Complete!`,
+                );
+                // Trigger another celebration for section completion
+                setTimeout(() => {
+                  triggerCelebration(
+                    `✨ Section Complete: ${selectedSection.name}!`,
+                  );
+                }, 1000);
+              }
+            }
+          }
+        }, 800);
+      }
+    }
   };
 
   const handleExportPDF = async () => {
@@ -275,7 +398,56 @@ export default function Dashboard() {
     };
   }, [progress, categories, totalQuestions, allQuestions]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <div className="animate-in" style={{ padding: "0 0 40px" }}>
+        <div style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              width: "200px",
+              height: "16px",
+              background: "var(--surface2)",
+              borderRadius: 4,
+              marginBottom: 8,
+              animation: "pulse 1.5s ease-in-out infinite",
+            }}
+          />
+          <div
+            style={{
+              width: "280px",
+              height: "28px",
+              background: "var(--surface2)",
+              borderRadius: 4,
+              animation: "pulse 1.5s ease-in-out infinite",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
+            gap: 10,
+            marginBottom: 24,
+          }}
+        >
+          {[0, 1, 2, 3, 4].map((i) => (
+            <SkeletonStat key={i} />
+          ))}
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // Show setup instructions if permissions error
   if (error) {
@@ -287,257 +459,339 @@ export default function Dashboard() {
     : 0;
 
   return (
-    <div className="animate-in" style={{ padding: "0 0 40px" }}>
-      {/* Hero */}
-      <div style={{ marginBottom: 24 }}>
-        <p
-          className="text-muted"
-          style={{
-            fontSize: "1rem",
-            letterSpacing: "0.01em",
-            marginBottom: 6,
-            fontWeight: 700,
-          }}
-        >
-          {greeting}
-        </p>
-        <h1
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-            wordBreak: "break-word",
-          }}
-        >
-          {user?.displayName?.split(" ")[0]}'s Prep Board
-        </h1>
-      </div>
+    <>
+      {/* Confetti celebration */}
+      <Confetti trigger={showConfetti} />
+      {showCelebration && (
+        <SuccessMessage message={celebrationMessage} show={showCelebration} />
+      )}
 
-      {/* Overview Stats */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
-          gap: 10,
-          marginBottom: 24,
-        }}
-      >
-        <StatCard label="Total" value={stats.total} color="var(--text)" />
-        <StatCard label="Done" value={stats.done} color="var(--green)" />
-        <StatCard label="Revisit" value={stats.revisit} color="var(--amber)" />
-        <StatCard label="Pending" value={stats.pending} color="var(--muted)" />
-        <StatCard
-          label="Avg Confidence"
-          value={
-            stats.avgConfidence > 0
-              ? `${stats.avgConfidence.toFixed(1)}/5`
-              : "N/A"
-          }
-          color="var(--blue)"
-        />
-      </div>
-
-      {/* Overall Progress */}
-      <div className="card" style={{ marginBottom: 24 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
-          }}
-        >
-          <span
-            style={{
-              fontSize: "0.78rem",
-              color: "var(--muted)",
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-            }}
-          >
-            Overall Completion
-          </span>
-          <span
-            style={{
-              fontWeight: 700,
-              color: completionPct === 100 ? "var(--green)" : "var(--amber)",
-              fontSize: "1.1rem",
-            }}
-          >
-            {completionPct}%
-          </span>
-        </div>
-        <div className="progress-track">
+      <div className="animate-in" style={{ padding: "0 0 40px" }}>
+        {/* Hero */}
+        <div style={{ marginBottom: 24 }}>
           <div
-            className="progress-fill"
             style={{
-              width: `${completionPct}%`,
-              background:
-                completionPct === 100 ? "var(--green)" : "var(--amber)",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Questions Section */}
-      <div style={{ marginTop: 32 }}>
-        {/* Questions Header */}
-        <div style={{ marginBottom: 20 }}>
-          <h2
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "1.4rem",
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              marginBottom: 8,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 12,
             }}
           >
-            📋 Interview Q&A
-          </h2>
-          <p
-            className="text-muted"
-            style={{ fontSize: "0.82rem", lineHeight: 1.5 }}
-          >
-            {!selectedCategory &&
-              !selectedSection &&
-              `${categories.length} categories • 818 questions with expert hints`}
-            {selectedCategory &&
-              !selectedSection &&
-              `${selectedCategory.name} • ${getCategoryStats(selectedCategory).total} questions`}
-            {selectedSection && `${selectedSection.name}`}
-          </p>
-        </div>
-
-        {/* Breadcrumb Navigation with Action Buttons */}
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: selectedCategory || selectedSection ? 0 : 20,
-            flexWrap: "wrap",
-          }}
-        >
-          <Breadcrumb
-            selectedCategory={selectedCategory}
-            selectedSection={selectedSection}
-            onBack={goBack}
-            onCategoryClick={() => setSelectedSection(null)}
-          />
-
-          {/* Export PDF Button - Only show when viewing questions */}
-          {selectedSection && selectedCategory && (
+            <div>
+              <p
+                className="text-muted"
+                style={{
+                  fontSize: "1rem",
+                  letterSpacing: "0.01em",
+                  marginBottom: 6,
+                  fontWeight: 700,
+                }}
+              >
+                {greeting}
+              </p>
+              <h1
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
+                  fontWeight: 700,
+                  letterSpacing: "-0.02em",
+                  wordBreak: "break-word",
+                }}
+              >
+                {user?.displayName?.split(" ")[0]}'s Prep Board
+              </h1>
+            </div>
+            {/* Test button for confetti - REMOVE AFTER TESTING */}
             <button
-              onClick={handleExportPDF}
-              disabled={exportingPDF}
-              className="btn"
+              onClick={() => {
+                console.log("TEST BUTTON CLICKED!");
+                triggerCelebration("🎉 Test Celebration!");
+              }}
+              className="btn btn-primary"
               style={{
-                padding: "8px 16px",
-                background: exportingPDF ? "var(--surface)" : "var(--green)15",
-                color: exportingPDF ? "var(--muted)" : "var(--green)",
-                border: `1px solid ${exportingPDF ? "var(--border)" : "var(--green)40"}`,
-                borderRadius: 6,
-                cursor: exportingPDF ? "wait" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: "0.8rem",
-                minHeight: "36px",
-                transition: "all 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                if (!exportingPDF) {
-                  e.currentTarget.style.background = "var(--green)25";
-                  e.currentTarget.style.borderColor = "var(--green)60";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!exportingPDF) {
-                  e.currentTarget.style.background = "var(--green)15";
-                  e.currentTarget.style.borderColor = "var(--green)40";
-                }
+                fontSize: "0.75rem",
+                pointerEvents: "auto",
+                cursor: "pointer",
               }}
             >
-              <span style={{ fontSize: "1rem" }}>
-                {exportingPDF ? "⏳" : "📄"}
-              </span>
-              {exportingPDF ? "Generating PDF..." : "Export to PDF"}
+              Test Confetti 🎊
             </button>
-          )}
+          </div>
         </div>
 
-        {/* Search Bar */}
-        <SearchBar
-          value={search}
-          onChange={setSearch}
-          placeholder={`Search ${selectedCategory ? selectedCategory.name : "all categories"}...`}
-        />
+        {/* Overview Stats */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
+            gap: 10,
+            marginBottom: 24,
+          }}
+        >
+          <StatCard
+            label="Total"
+            value={stats.total}
+            color="var(--text)"
+            index={0}
+          />
+          <StatCard
+            label="Done"
+            value={stats.done}
+            color="var(--green)"
+            index={1}
+          />
+          <StatCard
+            label="Revisit"
+            value={stats.revisit}
+            color="var(--amber)"
+            index={2}
+          />
+          <StatCard
+            label="Pending"
+            value={stats.pending}
+            color="var(--muted)"
+            index={3}
+          />
+          <StatCard
+            label="Avg Confidence"
+            value={
+              stats.avgConfidence > 0
+                ? `${stats.avgConfidence.toFixed(1)}/5`
+                : "N/A"
+            }
+            color="var(--blue)"
+            index={4}
+          />
+        </div>
 
-        {/* LEVEL 1: Category Grid */}
-        {!selectedCategory && !selectedSection && (
+        {/* Overall Progress */}
+        <div className="card" style={{ marginBottom: 24 }}>
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-              gap: 14,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 12,
             }}
           >
-            {filteredCategories.map((category) => (
-              <CategoryCard
-                key={category.id}
-                category={category}
-                stats={getCategoryStats(category)}
-                onClick={() => setSelectedCategory(category)}
-              />
-            ))}
+            <span
+              style={{
+                fontSize: "0.78rem",
+                color: "var(--muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Overall Completion
+            </span>
+            <span
+              style={{
+                fontWeight: 700,
+                color: completionPct === 100 ? "var(--green)" : "var(--amber)",
+                fontSize: "1.1rem",
+              }}
+            >
+              {completionPct}%
+            </span>
           </div>
-        )}
-
-        {/* LEVEL 2: Sections List */}
-        {selectedCategory && !selectedSection && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {getFilteredSections(selectedCategory).map((section) => {
-              const totalQuestions =
-                section.interviewQuestions.length +
-                section.scenarioQuestions.length;
-              const doneQuestions = [
-                ...section.interviewQuestions,
-                ...section.scenarioQuestions,
-              ].filter((q) => safeGetStatus(q.id) === "done").length;
-              return (
-                <SectionCard
-                  key={section.id}
-                  section={section}
-                  categoryColor={selectedCategory.color}
-                  stats={{ total: totalQuestions, done: doneQuestions }}
-                  onClick={() => setSelectedSection(section)}
-                />
-              );
-            })}
+          <div className="progress-track">
+            <div
+              className="progress-fill"
+              style={{
+                width: `${completionPct}%`,
+                background:
+                  completionPct === 100 ? "var(--green)" : "var(--amber)",
+              }}
+            />
           </div>
-        )}
+        </div>
 
-        {/* LEVEL 3: Questions */}
-        {selectedSection && selectedCategory && (
-          <QuestionsList
-            interviewQuestions={getFilteredQuestions(
-              selectedSection.interviewQuestions,
+        {/* Questions Section */}
+        <div style={{ marginTop: 32 }}>
+          {/* Questions Header */}
+          <div style={{ marginBottom: 20 }}>
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "1.4rem",
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                marginBottom: 8,
+              }}
+            >
+              📋 Interview Q&A
+            </h2>
+            <p
+              className="text-muted"
+              style={{ fontSize: "0.82rem", lineHeight: 1.5 }}
+            >
+              {!selectedCategory &&
+                !selectedSection &&
+                `${categories.length} categories • 818 questions with expert hints`}
+              {selectedCategory &&
+                !selectedSection &&
+                `${selectedCategory.name} • ${getCategoryStats(selectedCategory).total} questions`}
+              {selectedSection && `${selectedSection.name}`}
+            </p>
+          </div>
+
+          {/* Breadcrumb Navigation with Action Buttons */}
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              marginBottom: selectedCategory || selectedSection ? 0 : 20,
+              flexWrap: "wrap",
+            }}
+          >
+            <Breadcrumb
+              selectedCategory={selectedCategory}
+              selectedSection={selectedSection}
+              onBack={goBack}
+              onCategoryClick={() => setSelectedSection(null)}
+            />
+
+            {/* Export PDF Button - Only show when viewing questions */}
+            {selectedSection && selectedCategory && (
+              <button
+                onClick={handleExportPDF}
+                disabled={exportingPDF}
+                className="btn"
+                style={{
+                  padding: "8px 16px",
+                  background: exportingPDF
+                    ? "var(--surface)"
+                    : "var(--green)15",
+                  color: exportingPDF ? "var(--muted)" : "var(--green)",
+                  border: `1px solid ${exportingPDF ? "var(--border)" : "var(--green)40"}`,
+                  borderRadius: 6,
+                  cursor: exportingPDF ? "wait" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: "0.8rem",
+                  minHeight: "36px",
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!exportingPDF) {
+                    e.currentTarget.style.background = "var(--green)25";
+                    e.currentTarget.style.borderColor = "var(--green)60";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!exportingPDF) {
+                    e.currentTarget.style.background = "var(--green)15";
+                    e.currentTarget.style.borderColor = "var(--green)40";
+                  }
+                }}
+              >
+                <span style={{ fontSize: "1rem" }}>
+                  {exportingPDF ? "⏳" : "📄"}
+                </span>
+                {exportingPDF ? "Generating PDF..." : "Export to PDF"}
+              </button>
             )}
-            scenarioQuestions={getFilteredQuestions(
-              selectedSection.scenarioQuestions,
-            )}
-            categoryColor={selectedCategory.color}
-            visibleHints={visibleHints}
-            onToggleHint={toggleHint}
-            getQuestionStatus={safeGetStatus}
-            getQuestionConfidence={safeGetConfidence}
-            onUpdateProgress={safeUpdateProgress}
+          </div>
+
+          {/* Search Bar */}
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            placeholder={`Search ${selectedCategory ? selectedCategory.name : "all categories"}...`}
+            resultCount={
+              selectedCategory && !selectedSection
+                ? getFilteredSections(selectedCategory).length
+                : filteredCategories.length
+            }
           />
-        )}
+
+          {/* LEVEL 1: Category Grid */}
+          {!selectedCategory && !selectedSection && (
+            <>
+              {filteredCategories.length === 0 && search ? (
+                <NoResults searchTerm={search} />
+              ) : (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(240px, 1fr))",
+                    gap: 14,
+                  }}
+                >
+                  {filteredCategories.map((category, index) => (
+                    <CategoryCard
+                      key={category.id}
+                      category={category}
+                      stats={getCategoryStats(category)}
+                      onClick={() => setSelectedCategory(category)}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* LEVEL 2: Sections List */}
+          {selectedCategory && !selectedSection && (
+            <>
+              {getFilteredSections(selectedCategory).length === 0 && search ? (
+                <NoResults searchTerm={search} />
+              ) : (
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                >
+                  {getFilteredSections(selectedCategory).map(
+                    (section, index) => {
+                      const totalQuestions =
+                        section.interviewQuestions.length +
+                        section.scenarioQuestions.length;
+                      const doneQuestions = [
+                        ...section.interviewQuestions,
+                        ...section.scenarioQuestions,
+                      ].filter((q) => safeGetStatus(q.id) === "done").length;
+                      return (
+                        <SectionCard
+                          key={section.id}
+                          section={section}
+                          categoryColor={selectedCategory.color}
+                          stats={{ total: totalQuestions, done: doneQuestions }}
+                          onClick={() => setSelectedSection(section)}
+                          index={index}
+                        />
+                      );
+                    },
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* LEVEL 3: Questions */}
+          {selectedSection && selectedCategory && (
+            <QuestionsList
+              interviewQuestions={getFilteredQuestions(
+                selectedSection.interviewQuestions,
+              )}
+              scenarioQuestions={getFilteredQuestions(
+                selectedSection.scenarioQuestions,
+              )}
+              categoryColor={selectedCategory.color}
+              visibleHints={visibleHints}
+              onToggleHint={toggleHint}
+              getQuestionStatus={safeGetStatus}
+              getQuestionConfidence={safeGetConfidence}
+              onUpdateProgress={handleProgressUpdate}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

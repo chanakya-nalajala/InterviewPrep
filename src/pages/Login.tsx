@@ -78,6 +78,7 @@ export default function Login() {
         >
           {/* Logo */}
           <div
+            className="animate-scale"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -88,9 +89,17 @@ export default function Login() {
               background: "var(--amber-glow)",
               border: "1px solid var(--amber-dim)",
               marginBottom: 24,
+              animation: "scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1), glow 2s ease-in-out infinite",
             }}
           >
-            <span style={{ fontSize: 26 }}>⚡</span>
+            <span
+              style={{
+                fontSize: 26,
+                animation: "wiggle 3s ease-in-out infinite",
+              }}
+            >
+              ⚡
+            </span>
           </div>
 
           <h1
