@@ -1,5 +1,3 @@
-// Data types for comprehensive interview questions
-
 export interface Question {
   id: string;
   question: string;

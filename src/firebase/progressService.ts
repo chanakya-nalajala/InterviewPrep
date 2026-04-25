@@ -131,8 +131,6 @@ export async function recalculateStats(
   userId: string,
   allQuestions: { id: string; categoryId: string }[],
 ): Promise<void> {
-  console.log(`🔄 Recalculating stats for user ${userId}...`);
-
   const userProgress = await getUserProgress(userId);
   if (!userProgress) {
     console.warn("⚠️ No user progress found!");
@@ -196,23 +194,12 @@ export async function recalculateStats(
     byCategory,
   };
 
-  console.log("📊 Calculated stats:", {
-    total: stats.total,
-    done: stats.done,
-    revisit: stats.revisit,
-    pending: stats.pending,
-    skipped: stats.skipped,
-    avgConfidence: stats.avgConfidence.toFixed(1),
-    categories: Object.keys(stats.byCategory).length,
-  });
-
   const docRef = doc(db, PROGRESS_COLLECTION, userId);
   await updateDoc(docRef, {
     stats,
     lastSync: Date.now(),
   });
 
-  console.log("✅ Stats saved to Firestore successfully!");
 }
 
 /**

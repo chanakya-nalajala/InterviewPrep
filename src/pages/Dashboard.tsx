@@ -57,7 +57,7 @@ export default function Dashboard() {
   const totalQuestions = useMemo(() => getTotalQuestionCount(), []);
   const allQuestions = useMemo(() => getAllQuestionsWithCategories(), []);
 
-  // Calculate stats dynamically from questions object
+  // Calculate stats dynamically from question object
   const stats = useMemo<ProgressStats>(() => {
     if (!progress || !progress.questions) {
       return {
@@ -73,13 +73,8 @@ export default function Dashboard() {
 
     // Use stats from Firestore if available (should be synced by recalculateStats)
     if (progress.stats) {
-      console.log("📊 Using stats from Firestore:", progress.stats);
       return progress.stats;
     }
-
-    // Fallback: calculate stats client-side if not in Firestore yet
-    console.log("⚠️ Stats not in Firestore, calculating client-side...");
-
 
     const questions = progress.questions;
     let done = 0;
@@ -93,7 +88,7 @@ export default function Dashboard() {
     // Initialize category stats from actual data
     categories.forEach((cat) => {
       const categoryTotal = allQuestions.filter(
-        (q) => q.categoryId === cat.id
+        (q) => q.categoryId === cat.id,
       ).length;
 
       byCategory[cat.id] = {
@@ -271,7 +266,9 @@ export default function Dashboard() {
               : 0;
 
             // Find category info from loaded data
-            const categoryData = categories.find((cat) => cat.id === categoryId);
+            const categoryData = categories.find(
+              (cat) => cat.id === categoryId,
+            );
             const info = categoryData
               ? {
                   icon: categoryData.icon,

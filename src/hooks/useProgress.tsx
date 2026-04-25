@@ -66,8 +66,6 @@ export function useProgress() {
       if (!user) return;
 
       try {
-        console.log(`📊 Updating progress for ${questionId}:`, { status, confidence });
-
         // Update the question progress
         await updateQuestionProgress(
           user.uid,
@@ -77,13 +75,10 @@ export function useProgress() {
           notes,
         );
 
-        console.log("✅ Question progress updated, recalculating stats...");
-
         // Recalculate stats after updating
         const allQuestions = getAllQuestionsWithCategories();
         await recalculateStats(user.uid, allQuestions);
 
-        console.log("✅ Stats recalculated and saved to Firestore!");
       } catch (error) {
         console.error("❌ Error updating progress:", error);
       }
