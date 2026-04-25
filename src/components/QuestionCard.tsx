@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Question, QuestionStatus } from "../data/types.ts";
 import { StatusButton } from "./StatusButton.tsx";
-import { getAnswer } from "../firebase/answersService";
+import { getAnswerByQuestionId } from "../data/dataLoader";
 
 interface QuestionCardProps {
   question: Question;
@@ -26,24 +26,13 @@ export function QuestionCard({
 }: QuestionCardProps) {
   const [answer, setAnswer] = useState<string>("");
   const [showAnswer, setShowAnswer] = useState(false);
-  const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
 
-  // Load cached answer on mount
+  // Load answer from data.json on mount
   useEffect(() => {
-    const loadAnswer = async () => {
-      setIsLoadingAnswer(true);
-      try {
-        const cachedAnswer = await getAnswer(question.id);
-        if (cachedAnswer) {
-          setAnswer(cachedAnswer);
-        }
-      } catch (error) {
-        console.error("Error loading answer:", error);
-      } finally {
-        setIsLoadingAnswer(false);
-      }
-    };
-    loadAnswer();
+    const loadedAnswer = getAnswerByQuestionId(question.id);
+    if (loadedAnswer) {
+      setAnswer(loadedAnswer);
+    }
   }, [question.id]);
 
   const handleToggleAnswer = () => {
@@ -112,7 +101,6 @@ export function QuestionCard({
         {answer && (
           <button
             onClick={handleToggleAnswer}
-            disabled={isLoadingAnswer}
             style={{
               fontSize: "0.72rem",
               padding: "6px 14px",

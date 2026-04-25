@@ -2,7 +2,7 @@
 
 import jsPDF from "jspdf";
 import { Question, TopicSection } from "../data/types";
-import { getAnswer } from "../firebase/answersService";
+import { getAnswerByQuestionId } from "../data/dataLoader";
 
 interface ExportOptions {
   sectionName: string;
@@ -138,7 +138,7 @@ async function addQuestionsSection(
     // AI Answer (if enabled and available)
     if (options.includeAIAnswers) {
       try {
-        const aiAnswer = await getAnswer(question.id);
+        const aiAnswer = getAnswerByQuestionId(question.id);
         if (aiAnswer) {
           yPosition += 3;
           doc.setFontSize(10);

@@ -8,6 +8,7 @@ import {
   QuestionStatus,
   UserProgress,
 } from "../data/types";
+import { getTotalQuestionCount } from "../data/dataLoader";
 
 // Collection name
 const PROGRESS_COLLECTION = "userProgress";
@@ -21,14 +22,15 @@ export async function initializeUserProgress(userId: string): Promise<void> {
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
+      const totalQuestions = getTotalQuestionCount();
       const initialProgress: UserProgress = {
         userId,
         questions: {},
         stats: {
-          total: 738, // Total questions in system
+          total: totalQuestions,
           done: 0,
           revisit: 0,
-          pending: 738,
+          pending: totalQuestions,
           skipped: 0,
           avgConfidence: 0,
           byCategory: {},
@@ -177,11 +179,12 @@ export async function recalculateStats(
     }
   });
 
+  const totalQuestions = getTotalQuestionCount();
   const stats: ProgressStats = {
-    total: 738,
+    total: totalQuestions,
     done,
     revisit,
-    pending: 738 - done - revisit - skipped,
+    pending: totalQuestions - done - revisit - skipped,
     skipped,
     avgConfidence:
       countWithConfidence > 0 ? totalConfidence / countWithConfidence : 0,

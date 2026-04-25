@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useProgress } from "../hooks/useProgress";
 import { useMemo, useState } from "react";
 import { ProgressStats, CategoryStats } from "../data/types";
-import {
-  CATEGORY_INFO,
-  getCategoryFromQuestionId,
-} from "../data/categoryMapping";
 import { StatCard } from "../components/StatCard.tsx";
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
+import {
+  getOrganizedCategories,
+  getTotalQuestionCount,
+  getAllQuestionsWithCategories,
+} from "../data/dataLoader";
 
 // Time-based greeting helper
 function getTimeOfDay(): string {
@@ -51,14 +52,19 @@ export default function Dashboard() {
     return `${timeGreeting}! ${randomMessage}`;
   });
 
+  // Get categories and question counts dynamically from JSON
+  const categories = useMemo(() => getOrganizedCategories(), []);
+  const totalQuestions = useMemo(() => getTotalQuestionCount(), []);
+  const allQuestions = useMemo(() => getAllQuestionsWithCategories(), []);
+
   // Calculate stats dynamically from questions object
   const stats = useMemo<ProgressStats>(() => {
     if (!progress || !progress.questions) {
       return {
-        total: 818,
+        total: totalQuestions,
         done: 0,
         revisit: 0,
-        pending: 818,
+        pending: totalQuestions,
         skipped: 0,
         avgConfidence: 0,
         byCategory: {},
@@ -74,13 +80,17 @@ export default function Dashboard() {
 
     const byCategory: Record<string, CategoryStats> = {};
 
-    // Initialize category stats
-    Object.keys(CATEGORY_INFO).forEach((catId) => {
-      byCategory[catId] = {
-        total: 0,
+    // Initialize category stats from actual data
+    categories.forEach((cat) => {
+      const categoryTotal = allQuestions.filter(
+        (q) => q.categoryId === cat.id
+      ).length;
+
+      byCategory[cat.id] = {
+        total: categoryTotal,
         done: 0,
         revisit: 0,
-        pending: 0,
+        pending: categoryTotal,
         avgConfidence: 0,
       };
     });
@@ -96,28 +106,14 @@ export default function Dashboard() {
         confidenceCount++;
       }
 
-      // Update category stats
-      const categoryId = getCategoryFromQuestionId(q.questionId);
-      if (categoryId && byCategory[categoryId]) {
-        if (q.status === "done") byCategory[categoryId].done++;
-        else if (q.status === "revisit") byCategory[categoryId].revisit++;
+      // Update category stats - find the category for this question
+      const questionData = allQuestions.find((aq) => aq.id === q.questionId);
+      if (questionData && byCategory[questionData.categoryId]) {
+        if (q.status === "done") byCategory[questionData.categoryId].done++;
+        else if (q.status === "revisit")
+          byCategory[questionData.categoryId].revisit++;
       }
     });
-
-    // Set totals for each category (from our static data)
-    byCategory["java-core"].total = 92;
-    byCategory["java-collections"].total = 90;
-    byCategory["java-concurrency"].total = 80;
-    byCategory["java-jvm"].total = 40;
-    byCategory["java-modern"].total = 50;
-    byCategory["spring-core"].total = 41;
-    byCategory["spring-boot"].total = 40;
-    byCategory["spring-data"].total = 30;
-    byCategory["spring-security"].total = 20;
-    byCategory["spring-web"].total = 71;
-    byCategory["microservices"].total = 60;
-    byCategory["angular"].total = 100;
-    byCategory["kafka"].total = 80;
 
     // Calculate pending for each category
     Object.keys(byCategory).forEach((catId) => {
@@ -128,16 +124,16 @@ export default function Dashboard() {
     });
 
     return {
-      total: 818,
+      total: totalQuestions,
       done,
       revisit,
-      pending: 818 - done - revisit - skipped,
+      pending: totalQuestions - done - revisit - skipped,
       skipped,
       avgConfidence:
         confidenceCount > 0 ? totalConfidence / confidenceCount : 0,
       byCategory,
     };
-  }, [progress]);
+  }, [progress, categories, totalQuestions, allQuestions]);
 
   if (loading) return <LoadingSpinner />;
 
@@ -263,11 +259,21 @@ export default function Dashboard() {
             const pct = catStats.total
               ? Math.round((catStats.done / catStats.total) * 100)
               : 0;
-            const info = CATEGORY_INFO[categoryId] || {
-              icon: "📌",
-              name: categoryId,
-              color: "var(--text)",
-            };
+
+            // Find category info from loaded data
+            const categoryData = categories.find((cat) => cat.id === categoryId);
+            const info = categoryData
+              ? {
+                  icon: categoryData.icon,
+                  name: categoryData.name,
+                  color: categoryData.color,
+                }
+              : {
+                  icon: "📌",
+                  name: categoryId,
+                  color: "var(--text)",
+                };
+
             return (
               <div key={categoryId}>
                 <div

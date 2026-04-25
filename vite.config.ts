@@ -11,21 +11,6 @@ export default defineConfig({
           // Vendor chunks
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-
-          // Question data chunks (loaded on-demand)
-          'questions-java': [
-            './src/data/questions/javaCoreQuestions',
-            './src/data/questions/javaCollectionsQuestions',
-            './src/data/questions/javaQuestions',
-          ],
-          'questions-spring': [
-            './src/data/questions/springQuestions',
-          ],
-          'questions-other': [
-            './src/data/questions/microservicesQuestions',
-            './src/data/questions/angularQuestions',
-            './src/data/questions/kafkaQuestions',
-          ],
         },
       },
     },

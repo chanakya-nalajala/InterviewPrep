@@ -13,6 +13,7 @@ import { CategoryCard } from "../components/CategoryCard";
 import { SectionCard } from "../components/SectionCard";
 import { QuestionsList } from "../components/QuestionsList";
 import { exportSectionToPDF } from "../services/pdfExport";
+import { getOrganizedCategories } from "../data/dataLoader";
 
 export default function Questions() {
   const [search, setSearch] = useState("");
@@ -38,126 +39,10 @@ export default function Questions() {
 
   // Dynamically load all question data
   useEffect(() => {
-    const loadQuestions = async () => {
+    const loadQuestions = () => {
       try {
-        const [
-          { javaCoreQuestions },
-          { javaCollectionsQuestions },
-          { javaQuestions },
-          { springQuestions },
-          { microservicesQuestions },
-          { angularQuestions },
-          { kafkaQuestions },
-        ] = await Promise.all([
-          import("../data/questions/javaCoreQuestions"),
-          import("../data/questions/javaCollectionsQuestions"),
-          import("../data/questions/javaQuestions"),
-          import("../data/questions/springQuestions"),
-          import("../data/questions/microservicesQuestions"),
-          import("../data/questions/angularQuestions"),
-          import("../data/questions/kafkaQuestions"),
-        ]);
-
-        // Extract sections from javaQuestions
-        const concurrencySections = javaQuestions.sections.filter((s) =>
-          s.id.startsWith("concurrency"),
-        );
-        const jvmSections = javaQuestions.sections.filter((s) =>
-          s.id.startsWith("jvm"),
-        );
-        const modernSections = javaQuestions.sections.filter((s) =>
-          s.id.startsWith("modern"),
-        );
-
-        const javaConcurrencyQuestions: CategoryData = {
-          id: "java-concurrency",
-          name: "Java Concurrency",
-          icon: "⚡",
-          color: "var(--purple)",
-          description: "Threading, locks, atomic operations, executors",
-          sections: concurrencySections,
-        };
-
-        const javaJvmQuestions: CategoryData = {
-          id: "java-jvm",
-          name: "JVM & Memory",
-          icon: "🔧",
-          color: "var(--orange)",
-          description: "Memory management, GC, class loading",
-          sections: jvmSections,
-        };
-
-        const javaModernQuestions: CategoryData = {
-          id: "java-modern",
-          name: "Modern Java",
-          icon: "🚀",
-          color: "var(--cyan)",
-          description: "Lambdas, streams, optional, records, virtual threads",
-          sections: modernSections,
-        };
-
-        const springCoreQuestions: CategoryData = {
-          ...springQuestions,
-          id: "spring-core",
-          name: "Spring Core",
-          sections: springQuestions.sections.filter(
-            (s) =>
-              s.id.includes("core") ||
-              s.id.includes("ioc") ||
-              s.id.includes("aop"),
-          ),
-        };
-        const springBootQuestions: CategoryData = {
-          ...springQuestions,
-          id: "spring-boot",
-          name: "Spring Boot",
-          sections: springQuestions.sections.filter((s) =>
-            s.id.includes("boot"),
-          ),
-        };
-        const springDataQuestions: CategoryData = {
-          ...springQuestions,
-          id: "spring-data",
-          name: "Spring Data",
-          sections: springQuestions.sections.filter(
-            (s) => s.id.includes("data") || s.id.includes("jpa"),
-          ),
-        };
-        const springSecurityQuestions: CategoryData = {
-          ...springQuestions,
-          id: "spring-security",
-          name: "Spring Security",
-          sections: springQuestions.sections.filter((s) =>
-            s.id.includes("security"),
-          ),
-        };
-        const springWebQuestions: CategoryData = {
-          ...springQuestions,
-          id: "spring-web",
-          name: "Spring Web",
-          sections: springQuestions.sections.filter(
-            (s) =>
-              s.id.includes("web") ||
-              s.id.includes("rest") ||
-              s.id.includes("mvc"),
-          ),
-        };
-
-        setCategories([
-          javaCoreQuestions,
-          javaCollectionsQuestions,
-          javaConcurrencyQuestions,
-          javaJvmQuestions,
-          javaModernQuestions,
-          springCoreQuestions,
-          springBootQuestions,
-          springDataQuestions,
-          springSecurityQuestions,
-          springWebQuestions,
-          microservicesQuestions,
-          angularQuestions,
-          kafkaQuestions,
-        ]);
+        const allCategories = getOrganizedCategories();
+        setCategories(allCategories);
         setLoading(false);
       } catch (error) {
         console.error("Error loading questions:", error);
