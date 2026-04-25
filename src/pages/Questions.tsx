@@ -267,8 +267,6 @@ export default function Questions() {
     }
   };
 
-
-
   const filteredCategories = getFilteredCategories();
 
   // Show loading spinner while questions are being loaded
@@ -370,8 +368,6 @@ export default function Questions() {
         onChange={setSearch}
         placeholder={`Search ${selectedCategory ? selectedCategory.name : "all categories"}...`}
       />
-
-
 
       {/* LEVEL 1: Category Grid */}
       {!selectedCategory && !selectedSection && (

@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Question, QuestionStatus } from "../data/types.ts";
 import { StatusButton } from "./StatusButton.tsx";
-import { getCachedAIAnswer } from "../firebase/aiAnswersService";
+import { getAnswer } from "../firebase/answersService";
 
 interface QuestionCardProps {
   question: Question;
@@ -33,7 +33,7 @@ export function QuestionCard({
     const loadAnswer = async () => {
       setIsLoadingAnswer(true);
       try {
-        const cachedAnswer = await getCachedAIAnswer(question.id);
+        const cachedAnswer = await getAnswer(question.id);
         if (cachedAnswer) {
           setAnswer(cachedAnswer);
         }
@@ -228,9 +228,7 @@ export function QuestionCard({
               color: "var(--text)",
             }}
           >
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {answer}
-            </ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{answer}</ReactMarkdown>
           </div>
         </div>
       )}
