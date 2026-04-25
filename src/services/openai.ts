@@ -1,14 +1,64 @@
 // OpenAI API Service - Get AI-generated answers for interview questions
 
+import { getCachedAIAnswer, saveAIAnswer } from "../firebase/aiAnswersService";
+
 export interface AIResponse {
   answer: string;
   error?: string;
+  fromCache?: boolean;
 }
 
 /**
- * Get AI-generated answer for an interview question
+ * Get AI answer with cache-first strategy:
+ * 1. Check Firebase cache
+ * 2. If not found, call OpenAI API
+ * 3. Cache the response
+ * 4. Return error only if both fail
  */
 export async function getAIAnswer(
+  questionId: string,
+  question: string,
+  hint?: string,
+): Promise<AIResponse> {
+  // Step 1: Try to get from cache first
+  try {
+    const cachedAnswer = await getCachedAIAnswer(questionId);
+    if (cachedAnswer) {
+      console.log("✅ AI answer loaded from cache:", questionId);
+      return {
+        answer: cachedAnswer,
+        fromCache: true,
+      };
+    }
+  } catch (error) {
+    console.warn("Cache lookup failed, will try API:", error);
+    // Don't fail here - continue to API call
+  }
+
+  // Step 2: Cache miss - call OpenAI API
+  const apiResponse = await callOpenAI(question, hint);
+
+  // Step 3: If API succeeded, save to cache
+  if (apiResponse.answer && !apiResponse.error) {
+    try {
+      await saveAIAnswer(questionId, apiResponse.answer);
+      console.log("💾 AI answer cached successfully:", questionId);
+    } catch (error) {
+      console.warn("Failed to cache answer, but continuing:", error);
+      // Don't fail - we still have the answer
+    }
+  }
+
+  return {
+    ...apiResponse,
+    fromCache: false,
+  };
+}
+
+/**
+ * Call OpenAI API directly (internal function)
+ */
+async function callOpenAI(
   question: string,
   hint?: string,
 ): Promise<AIResponse> {
@@ -36,9 +86,11 @@ export async function getAIAnswer(
           - Do not add unrelated background or over-explain.
           
           Style:
+          - Use markdown default for formatting the answer
           - Direct, crisp, engineer-to-engineer explanation
           - Short, structured sentences
           - No emojis, no fluff, no conversational padding
+          - Use code blocks for code examples
           
           Goal:
           Help the candidate deliver clear, confident, and high-signal interview answers.

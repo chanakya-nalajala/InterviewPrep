@@ -28,6 +28,7 @@ export function QuestionCard({
   const [showAiAnswer, setShowAiAnswer] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [aiError, setAiError] = useState<string>("");
+  const [isFromCache, setIsFromCache] = useState(false);
 
   const handleAskAI = async () => {
     if (aiAnswer && showAiAnswer) {
@@ -37,24 +38,36 @@ export function QuestionCard({
     }
 
     if (aiAnswer) {
-      // Show cached answer
+      // Show cached answer (in component state)
       setShowAiAnswer(true);
       return;
     }
 
-    // Fetch new answer
+    // Fetch answer (cache-first: checks Firebase → OpenAI API → saves to cache)
     setIsLoadingAI(true);
     setAiError("");
 
-    const response = await getAIAnswer(question.question, question.hint);
+    try {
+      const response = await getAIAnswer(
+        question.id,
+        question.question,
+        question.hint
+      );
 
-    setIsLoadingAI(false);
-
-    if (response.error) {
-      setAiError(response.error);
-    } else {
-      setAiAnswer(response.answer);
-      setShowAiAnswer(true);
+      if (response.error) {
+        setAiError(response.error);
+        setShowAiAnswer(false);
+      } else {
+        setAiAnswer(response.answer);
+        setShowAiAnswer(true);
+        setIsFromCache(response.fromCache || false);
+      }
+    } catch (error: any) {
+      console.error("Error getting AI answer:", error);
+      setAiError("Unexpected error occurred. Please try again.");
+      setShowAiAnswer(false);
+    } finally {
+      setIsLoadingAI(false);
     }
   };
   return (
@@ -213,7 +226,16 @@ export function QuestionCard({
             borderRadius: 4,
           }}
         >
-          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              marginBottom: 10,
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+            }}
+          >
             <span
               style={{
                 fontSize: "0.7rem",
@@ -226,6 +248,23 @@ export function QuestionCard({
             >
               🤖 AI Answer:
             </span>
+            {isFromCache && (
+              <span
+                style={{
+                  fontSize: "0.65rem",
+                  padding: "2px 8px",
+                  background: "var(--cyan)15",
+                  color: "var(--cyan)",
+                  borderRadius: 4,
+                  border: "1px solid var(--cyan)40",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                💾 Cached
+              </span>
+            )}
           </div>
           <div
             className="markdown-content"
