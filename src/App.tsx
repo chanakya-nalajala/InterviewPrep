@@ -1,4 +1,3 @@
-// src/App.tsx
 import { HashRouter, Navigate, NavLink, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { lazy, Suspense, ReactNode, useState } from "react";
@@ -7,9 +6,7 @@ import "./styles/global.css";
 
 // Lazy load heavy pages for better initial load time
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const InterviewQuestions = lazy(
-  () => import("./pages/./InterviewQuestions.tsx"),
-);
+const InterviewQuestions = lazy(() => import("./pages/./Questions"));
 
 interface LayoutProps {
   children: ReactNode;
@@ -38,7 +35,9 @@ function Layout({ children }: LayoutProps) {
           minHeight: 54,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
+        <div
+          style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}
+        >
           <span
             style={{
               fontFamily: "var(--font-display)",

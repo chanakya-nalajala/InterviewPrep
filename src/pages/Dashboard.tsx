@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useProgress } from "../hooks/useProgress";
@@ -13,6 +12,8 @@ import { springQuestions } from "../data/questions/springQuestions";
 import { microservicesQuestions } from "../data/questions/microservicesQuestions";
 import { angularQuestions } from "../data/questions/angularQuestions";
 import { kafkaQuestions } from "../data/questions/kafkaQuestions";
+import { StatCard } from "../components/StatCard.tsx";
+import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 
 const CATEGORY_INFO: Record<
   string,
@@ -264,7 +265,7 @@ export default function Dashboard() {
     };
   }, [progress]);
 
-  if (loading) return <Spinner />;
+  if (loading) return <LoadingSpinner />;
 
   // Show setup instructions if permissions error
   if (error) {
@@ -481,65 +482,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-interface StatCardProps {
-  label: string;
-  value: number | string;
-  color: string;
-}
-
-function StatCard({ label, value, color }: StatCardProps) {
-  return (
-    <div className="card" style={{ textAlign: "center", padding: "14px 10px" }}>
-      <div
-        style={{
-          fontSize: "clamp(1.3rem, 4vw, 1.6rem)",
-          fontWeight: 700,
-          color,
-          fontFamily: "var(--font-display)",
-        }}
-      >
-        {value}
-      </div>
-      <div
-        style={{
-          fontSize: "0.68rem",
-          color: "var(--muted)",
-          marginTop: 4,
-          textTransform: "uppercase",
-          letterSpacing: "0.06em",
-        }}
-      >
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function Spinner() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: 300,
-      }}
-    >
-      <div
-        style={{
-          width: 32,
-          height: 32,
-          border: "2px solid var(--border)",
-          borderTopColor: "var(--amber)",
-          borderRadius: "50%",
-          animation: "spin 0.7s linear infinite",
-        }}
-      />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

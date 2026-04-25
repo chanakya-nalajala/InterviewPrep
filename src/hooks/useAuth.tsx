@@ -1,4 +1,3 @@
-// src/hooks/useAuth.tsx
 import {
   createContext,
   ReactNode,
