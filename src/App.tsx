@@ -6,7 +6,7 @@ import "./styles/global.css";
 
 // Lazy load heavy pages for better initial load time
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const InterviewQuestions = lazy(() => import("./pages/./Questions"));
+const InterviewQuestions = lazy(() => import("./pages/Questions"));
 
 interface LayoutProps {
   children: ReactNode;

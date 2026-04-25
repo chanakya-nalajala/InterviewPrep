@@ -3,174 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useProgress } from "../hooks/useProgress";
 import { useMemo } from "react";
 import { ProgressStats, CategoryStats } from "../data/types";
-
-// Import all questions to get category IDs
-import { javaCoreQuestions } from "../data/questions/javaCoreQuestions";
-import { javaCollectionsQuestions } from "../data/questions/javaCollectionsQuestions";
-import { javaQuestions } from "../data/questions/javaQuestions";
-import { springQuestions } from "../data/questions/springQuestions";
-import { microservicesQuestions } from "../data/questions/microservicesQuestions";
-import { angularQuestions } from "../data/questions/angularQuestions";
-import { kafkaQuestions } from "../data/questions/kafkaQuestions";
+import {
+  CATEGORY_INFO,
+  getCategoryFromQuestionId,
+} from "../data/categoryMapping";
 import { StatCard } from "../components/StatCard.tsx";
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 
-const CATEGORY_INFO: Record<
-  string,
-  { icon: string; name: string; color: string }
-> = {
-  "java-core": { icon: "☕", name: "Java Core", color: "var(--amber)" },
-  "java-collections": { icon: "📦", name: "Collections", color: "var(--blue)" },
-  "java-concurrency": {
-    icon: "⚡",
-    name: "Concurrency",
-    color: "var(--purple)",
-  },
-  "java-jvm": { icon: "🔧", name: "JVM & Memory", color: "var(--orange)" },
-  "java-modern": { icon: "🚀", name: "Modern Java", color: "var(--cyan)" },
-  "spring-core": { icon: "🍃", name: "Spring Core", color: "var(--green)" },
-  "spring-boot": { icon: "🚀", name: "Spring Boot", color: "var(--lime)" },
-  "spring-data": { icon: "💾", name: "Spring Data", color: "var(--teal)" },
-  "spring-security": {
-    icon: "🔒",
-    name: "Spring Security",
-    color: "var(--red)",
-  },
-  "spring-web": { icon: "🌐", name: "Spring Web", color: "var(--indigo)" },
-  microservices: { icon: "🏗️", name: "Microservices", color: "var(--purple)" },
-  angular: { icon: "🅰️", name: "Angular", color: "var(--red)" },
-  kafka: { icon: "📨", name: "Apache Kafka", color: "var(--purple)" },
-};
 
-// Map to get category from question ID
-const QUESTION_TO_CATEGORY: Record<string, string> = {};
-
-// Helper to determine subcategory from section ID
-function getJavaSubcategory(sectionId: string): string {
-  // Concurrency sections
-  if (
-    sectionId.includes("concurrency") ||
-    sectionId.includes("thread") ||
-    sectionId.includes("lock") ||
-    sectionId.includes("atomic") ||
-    sectionId.includes("executor") ||
-    sectionId.includes("completable") ||
-    sectionId.includes("deadlock")
-  ) {
-    return "java-concurrency";
-  }
-  // JVM sections
-  if (
-    sectionId.includes("jvm") ||
-    sectionId.includes("memory") ||
-    sectionId.includes("gc") ||
-    sectionId.includes("classloader")
-  ) {
-    return "java-jvm";
-  }
-  // Modern Java sections
-  if (
-    sectionId.includes("modern") ||
-    sectionId.includes("lambda") ||
-    sectionId.includes("stream") ||
-    sectionId.includes("optional") ||
-    sectionId.includes("record") ||
-    sectionId.includes("virtual-thread")
-  ) {
-    return "java-modern";
-  }
-  // Collections sections
-  if (
-    sectionId.includes("collection") ||
-    sectionId.includes("list") ||
-    sectionId.includes("map") ||
-    sectionId.includes("set") ||
-    sectionId.includes("queue") ||
-    sectionId.includes("comparable")
-  ) {
-    return "java-collections";
-  }
-  // Default to java-core
-  return "java-core";
-}
-
-// Populate question-to-category mapping
-javaCoreQuestions.sections.forEach((section) => {
-  section.interviewQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "java-core";
-  });
-  section.scenarioQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "java-core";
-  });
-});
-
-javaCollectionsQuestions.sections.forEach((section) => {
-  section.interviewQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "java-collections";
-  });
-  section.scenarioQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "java-collections";
-  });
-});
-
-// Map javaQuestions sections to appropriate subcategories
-javaQuestions.sections.forEach((section) => {
-  const categoryId = getJavaSubcategory(section.id);
-  section.interviewQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = categoryId;
-  });
-  section.scenarioQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = categoryId;
-  });
-});
-
-springQuestions.sections.forEach((section) => {
-  let categoryId = "spring-core";
-  if (section.id.includes("boot")) categoryId = "spring-boot";
-  else if (section.id.includes("data") || section.id.includes("jpa"))
-    categoryId = "spring-data";
-  else if (section.id.includes("security")) categoryId = "spring-security";
-  else if (
-    section.id.includes("web") ||
-    section.id.includes("rest") ||
-    section.id.includes("mvc")
-  )
-    categoryId = "spring-web";
-
-  section.interviewQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = categoryId;
-  });
-  section.scenarioQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = categoryId;
-  });
-});
-
-microservicesQuestions.sections.forEach((section) => {
-  section.interviewQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "microservices";
-  });
-  section.scenarioQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "microservices";
-  });
-});
-
-angularQuestions.sections.forEach((section) => {
-  section.interviewQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "angular";
-  });
-  section.scenarioQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "angular";
-  });
-});
-
-kafkaQuestions.sections.forEach((section) => {
-  section.interviewQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "kafka";
-  });
-  section.scenarioQuestions.forEach((q) => {
-    QUESTION_TO_CATEGORY[q.id] = "kafka";
-  });
-});
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -223,7 +63,7 @@ export default function Dashboard() {
       }
 
       // Update category stats
-      const categoryId = QUESTION_TO_CATEGORY[q.questionId];
+      const categoryId = getCategoryFromQuestionId(q.questionId);
       if (categoryId && byCategory[categoryId]) {
         if (q.status === "done") byCategory[categoryId].done++;
         else if (q.status === "revisit") byCategory[categoryId].revisit++;
