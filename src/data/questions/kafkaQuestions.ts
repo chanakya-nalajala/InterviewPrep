@@ -10,7 +10,7 @@ export const kafkaQuestions: CategoryData = {
   sections: [
     {
       id: "kafka-fundamentals",
-      name: "15.1 Kafka Fundamentals",
+      name: "Kafka Fundamentals",
       interviewQuestions: [
         {
           id: "kafka-fund-1",
@@ -21,7 +21,8 @@ export const kafkaQuestions: CategoryData = {
         {
           id: "kafka-fund-2",
           type: "interview",
-          question: "Explain the difference between Kafka and traditional message queues?",
+          question:
+            "Explain the difference between Kafka and traditional message queues?",
           hint: "Kafka: append-only log, persistent, pull-based, horizontal scaling. MQ: delete on consume, often push-based, vertical scaling.",
         },
         {
@@ -53,7 +54,8 @@ export const kafkaQuestions: CategoryData = {
         {
           id: "kafka-fund-s1",
           type: "scenario",
-          question: "Cluster has 3 brokers, RF=3. One broker goes down. What happens?",
+          question:
+            "Cluster has 3 brokers, RF=3. One broker goes down. What happens?",
           hint: "Cluster continues. Leader election. One replica out-of-sync. No data loss if min.insync.replicas=2.",
         },
         {
@@ -90,7 +92,7 @@ export const kafkaQuestions: CategoryData = {
     },
     {
       id: "kafka-producer",
-      name: "15.2 Producers",
+      name: "Producers",
       interviewQuestions: [
         {
           id: "kafka-prod-1",
@@ -158,7 +160,7 @@ export const kafkaQuestions: CategoryData = {
     },
     {
       id: "kafka-consumer",
-      name: "15.3 Consumers",
+      name: "Consumers",
       interviewQuestions: [
         {
           id: "kafka-cons-1",
@@ -220,7 +222,7 @@ export const kafkaQuestions: CategoryData = {
     },
     {
       id: "kafka-monitoring",
-      name: "15.4 Monitoring",
+      name: "Monitoring",
       interviewQuestions: [
         {
           id: "kafka-mon-1",

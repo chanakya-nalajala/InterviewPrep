@@ -2,7 +2,7 @@ import { CategoryData } from "../types";
 
 export const javaCoreQuestions: CategoryData = {
   id: "java-core",
-  name: "1. Java Core",
+  name: "Java Core",
   icon: "☕",
   color: "var(--amber)",
   description:
@@ -10,7 +10,7 @@ export const javaCoreQuestions: CategoryData = {
   sections: [
     {
       id: "strings",
-      name: "1.1 Strings",
+      name: "Strings",
       interviewQuestions: [
         {
           id: "java-str-1",
@@ -92,7 +92,7 @@ export const javaCoreQuestions: CategoryData = {
     },
     {
       id: "oop",
-      name: "1.2 Object-Oriented Programming (OOP)",
+      name: "Object-Oriented Programming (OOP)",
       interviewQuestions: [
         {
           id: "java-oop-1",
@@ -155,7 +155,7 @@ export const javaCoreQuestions: CategoryData = {
     },
     {
       id: "exceptions",
-      name: "1.3 Exception Handling",
+      name: "Exception Handling",
       interviewQuestions: [
         {
           id: "java-exc-1",
@@ -209,7 +209,7 @@ export const javaCoreQuestions: CategoryData = {
     },
     {
       id: "generics",
-      name: "1.4 Generics",
+      name: "Generics",
       interviewQuestions: [
         {
           id: "java-gen-1",
@@ -256,7 +256,7 @@ export const javaCoreQuestions: CategoryData = {
     },
     {
       id: "reflection",
-      name: "1.5 Reflection & Annotations",
+      name: "Reflection & Annotations",
       interviewQuestions: [
         {
           id: "java-refl-1",
@@ -331,7 +331,7 @@ export const javaCoreQuestions: CategoryData = {
     },
     {
       id: "serialization",
-      name: "1.6 Serialization",
+      name: "Serialization",
       interviewQuestions: [
         {
           id: "java-ser-1",

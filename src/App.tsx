@@ -1,11 +1,15 @@
 // src/App.tsx
 import { HashRouter, Navigate, NavLink, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { lazy, Suspense, ReactNode } from "react";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import InterviewQuestions from "./pages/InterviewQuestions";
 import "./styles/global.css";
-import { ReactNode } from "react";
+
+// Lazy load heavy pages for better initial load time
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const InterviewQuestions = lazy(
+  () => import("./pages/./InterviewQuestions.tsx"),
+);
 
 interface LayoutProps {
   children: ReactNode;
@@ -141,12 +145,36 @@ function AppRoutes() {
 
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/interview" element={<InterviewQuestions />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "60vh",
+            }}
+          >
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                border: "2px solid var(--border)",
+                borderTopColor: "var(--amber)",
+                borderRadius: "50%",
+                animation: "spin 0.7s linear infinite",
+              }}
+            />
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/interview" element={<InterviewQuestions />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Suspense>
     </Layout>
   );
 }

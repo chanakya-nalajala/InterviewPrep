@@ -2,7 +2,7 @@ import { CategoryData } from "../types";
 
 export const javaConcurrencyQuestions: CategoryData = {
   id: "java-concurrency",
-  name: "3. Concurrency & Multithreading",
+  name: "Concurrency & Multithreading",
   icon: "⚡",
   color: "var(--purple)",
   description:

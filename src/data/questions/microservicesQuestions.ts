@@ -2,7 +2,7 @@ import { CategoryData } from "../types";
 
 export const microservicesQuestions: CategoryData = {
   id: "microservices",
-  name: "13. Microservices Architecture",
+  name: "Microservices Architecture",
   icon: "🏗️",
   color: "var(--purple)",
   description:
@@ -10,7 +10,7 @@ export const microservicesQuestions: CategoryData = {
   sections: [
     {
       id: "ms-architecture",
-      name: "13.1 Architecture Patterns",
+      name: "Architecture Patterns",
       interviewQuestions: [
         {
           id: "ms-arch-1",
@@ -86,7 +86,7 @@ export const microservicesQuestions: CategoryData = {
     },
     {
       id: "ms-communication",
-      name: "13.2 Service Communication",
+      name: "Service Communication",
       interviewQuestions: [
         {
           id: "ms-comm-1",
@@ -156,7 +156,7 @@ export const microservicesQuestions: CategoryData = {
     },
     {
       id: "ms-resilience",
-      name: "13.3 Resilience Patterns",
+      name: "Resilience Patterns",
       interviewQuestions: [
         {
           id: "ms-res-1",
@@ -231,7 +231,7 @@ export const microservicesQuestions: CategoryData = {
     },
     {
       id: "ms-data",
-      name: "13.4 Data Management in Microservices",
+      name: "Data Management in Microservices",
       interviewQuestions: [
         {
           id: "ms-data-1",
@@ -305,7 +305,7 @@ export const microservicesQuestions: CategoryData = {
     },
     {
       id: "ms-observability",
-      name: "13.5 Observability",
+      name: "Observability",
       interviewQuestions: [
         {
           id: "ms-obs-1",
@@ -380,7 +380,7 @@ export const microservicesQuestions: CategoryData = {
     },
     {
       id: "ms-deployment",
-      name: "13.6 Deployment & Containerization",
+      name: "Deployment & Containerization",
       interviewQuestions: [
         {
           id: "ms-deploy-1",

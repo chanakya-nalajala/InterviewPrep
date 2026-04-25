@@ -2,7 +2,7 @@ import { CategoryData } from "../types";
 
 export const javaCollectionsQuestions: CategoryData = {
   id: "java-collections",
-  name: "2. Collections Framework",
+  name: "Collections Framework",
   icon: "📦",
   color: "var(--blue)",
   description:
@@ -10,7 +10,7 @@ export const javaCollectionsQuestions: CategoryData = {
   sections: [
     {
       id: "collections-list",
-      name: "2.1 List, Set, Queue",
+      name: "List, Set, Queue",
       interviewQuestions: [
         {
           id: "java-coll-1",
@@ -85,7 +85,7 @@ export const javaCollectionsQuestions: CategoryData = {
     },
     {
       id: "collections-map",
-      name: "2.2 Map Interface & Implementations",
+      name: "Map Interface & Implementations",
       interviewQuestions: [
         {
           id: "java-map-1",
@@ -159,7 +159,7 @@ export const javaCollectionsQuestions: CategoryData = {
     },
     {
       id: "collections-iterators",
-      name: "2.3 Iterators & Comparable",
+      name: "Iterators & Comparable",
       interviewQuestions: [
         {
           id: "java-iter-1",
@@ -234,7 +234,7 @@ export const javaCollectionsQuestions: CategoryData = {
     },
     {
       id: "collections-queue",
-      name: "2.4 Queue, Deque & PriorityQueue",
+      name: "Queue, Deque & PriorityQueue",
       interviewQuestions: [
         {
           id: "java-queue-1",
@@ -310,7 +310,7 @@ export const javaCollectionsQuestions: CategoryData = {
     },
     {
       id: "collections-iter-cme",
-      name: "2.5 Iterators & ConcurrentModificationException",
+      name: "Iterators & ConcurrentModificationException",
       interviewQuestions: [
         {
           id: "java-iter-cme-1",
@@ -387,7 +387,7 @@ export const javaCollectionsQuestions: CategoryData = {
     },
     {
       id: "collections-comparable",
-      name: "2.6 Comparable vs Comparator",
+      name: "Comparable vs Comparator",
       interviewQuestions: [
         {
           id: "java-comp-1",

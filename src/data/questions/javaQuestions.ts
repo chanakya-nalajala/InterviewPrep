@@ -10,7 +10,7 @@ export const javaQuestions: CategoryData = {
   sections: [
     {
       id: "strings",
-      name: "1.1 Strings",
+      name: "Strings",
       interviewQuestions: [
         {
           id: "java-str-1",
@@ -92,7 +92,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "oop",
-      name: "1.2 Object-Oriented Programming (OOP)",
+      name: "Object-Oriented Programming (OOP)",
       interviewQuestions: [
         {
           id: "java-oop-1",
@@ -155,7 +155,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "exceptions",
-      name: "1.3 Exception Handling",
+      name: "Exception Handling",
       interviewQuestions: [
         {
           id: "java-exc-1",
@@ -209,7 +209,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "generics",
-      name: "1.4 Generics",
+      name: "Generics",
       interviewQuestions: [
         {
           id: "java-gen-1",
@@ -256,7 +256,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "collections-list",
-      name: "2.1 List, Set, Queue",
+      name: "List, Set, Queue",
       interviewQuestions: [
         {
           id: "java-coll-1",
@@ -331,7 +331,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "collections-map",
-      name: "2.2 Map Interface & Implementations",
+      name: "Map Interface & Implementations",
       interviewQuestions: [
         {
           id: "java-map-1",
@@ -405,7 +405,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "collections-iterators",
-      name: "2.3 Iterators & Comparable",
+      name: "Iterators & Comparable",
       interviewQuestions: [
         {
           id: "java-iter-1",
@@ -480,7 +480,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-basics",
-      name: "3.1 Threads & Concurrency Basics",
+      name: "Threads & Concurrency Basics",
       interviewQuestions: [
         {
           id: "java-conc-1",
@@ -554,7 +554,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-locks",
-      name: "3.2 Locks & Synchronization",
+      name: "Locks & Synchronization",
       interviewQuestions: [
         {
           id: "java-lock-1",
@@ -629,7 +629,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-atomic",
-      name: "3.3 Atomic Variables & volatile",
+      name: "Atomic Variables & volatile",
       interviewQuestions: [
         {
           id: "java-atomic-1",
@@ -704,7 +704,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-executor",
-      name: "3.4 ExecutorService & Thread Pools",
+      name: "ExecutorService & Thread Pools",
       interviewQuestions: [
         {
           id: "java-exec-1",
@@ -781,7 +781,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-completable",
-      name: "3.5 CompletableFuture",
+      name: "CompletableFuture",
       interviewQuestions: [
         {
           id: "java-cf-1",
@@ -857,7 +857,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-concurrent-collections",
-      name: "3.6 Concurrent Collections",
+      name: "Concurrent Collections",
       interviewQuestions: [
         {
           id: "java-cc-1",
@@ -935,7 +935,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-deadlock",
-      name: "3.7 Deadlock, Livelock & Starvation",
+      name: "Deadlock, Livelock & Starvation",
       interviewQuestions: [
         {
           id: "java-deadlock-1",
@@ -1011,7 +1011,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "concurrency-threadlocal",
-      name: "3.8 ThreadLocal",
+      name: "ThreadLocal",
       interviewQuestions: [
         {
           id: "java-tl-1",
@@ -1085,7 +1085,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "jvm-architecture",
-      name: "4.1 JVM Architecture",
+      name: "JVM Architecture",
       interviewQuestions: [
         {
           id: "java-jvm-1",
@@ -1160,7 +1160,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "jvm-memory",
-      name: "4.2 Heap, Stack & Memory Areas",
+      name: "Heap, Stack & Memory Areas",
       interviewQuestions: [
         {
           id: "java-mem-1",
@@ -1234,7 +1234,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "jvm-gc",
-      name: "4.3 Garbage Collection",
+      name: "Garbage Collection",
       interviewQuestions: [
         {
           id: "java-gc-1",
@@ -1307,7 +1307,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "jvm-memory-model",
-      name: "4.4 Java Memory Model (JMM)",
+      name: "Java Memory Model (JMM)",
       interviewQuestions: [
         {
           id: "java-jmm-1",
@@ -1381,7 +1381,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "modern-lambdas",
-      name: "5.1 Lambda Expressions & Functional Interfaces",
+      name: "Lambda Expressions & Functional Interfaces",
       interviewQuestions: [
         {
           id: "java-lambda-1",
@@ -1456,7 +1456,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "modern-streams",
-      name: "5.2 Streams API",
+      name: "Streams API",
       interviewQuestions: [
         {
           id: "java-stream-1",
@@ -1531,7 +1531,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "modern-optional",
-      name: "5.3 Optional",
+      name: "Optional",
       interviewQuestions: [
         {
           id: "java-opt-1",
@@ -1605,7 +1605,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "modern-records",
-      name: "5.4 Records, Sealed Classes & Pattern Matching",
+      name: "Records, Sealed Classes & Pattern Matching",
       interviewQuestions: [
         {
           id: "java-rec-1",
@@ -1677,7 +1677,7 @@ export const javaQuestions: CategoryData = {
     },
     {
       id: "modern-virtual-threads",
-      name: "5.5 Virtual Threads (Java 21)",
+      name: "Virtual Threads (Java 21)",
       interviewQuestions: [
         {
           id: "java-vt-1",

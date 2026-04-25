@@ -10,7 +10,7 @@ export const springQuestions: CategoryData = {
   sections: [
     {
       id: "spring-ioc-di",
-      name: "6.1 IoC Container & Dependency Injection",
+      name: "IoC Container & Dependency Injection",
       interviewQuestions: [
         {
           id: "spring-ioc-1",
@@ -92,7 +92,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "spring-bean-lifecycle",
-      name: "6.2 Bean Lifecycle & Scopes",
+      name: "Bean Lifecycle & Scopes",
       interviewQuestions: [
         {
           id: "spring-lifecycle-1",
@@ -168,7 +168,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "spring-aop",
-      name: "6.3 Spring AOP",
+      name: "Spring AOP",
       interviewQuestions: [
         {
           id: "spring-aop-1",
@@ -245,7 +245,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "spring-events",
-      name: "6.4 ApplicationContext & Events",
+      name: "ApplicationContext & Events",
       interviewQuestions: [
         {
           id: "spring-events-1",
@@ -321,7 +321,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "boot-autoconfig",
-      name: "7.1 Auto-Configuration",
+      name: "Auto-Configuration",
       interviewQuestions: [
         {
           id: "boot-autoconfig-1",
@@ -395,7 +395,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "boot-profiles",
-      name: "7.2 Profiles & Configuration",
+      name: "Profiles & Configuration",
       interviewQuestions: [
         {
           id: "boot-profiles-1",
@@ -472,7 +472,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "boot-actuator",
-      name: "7.3 Spring Boot Actuator",
+      name: "Spring Boot Actuator",
       interviewQuestions: [
         {
           id: "boot-actuator-1",
@@ -547,7 +547,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "boot-testing",
-      name: "7.4 Spring Boot Testing",
+      name: "Spring Boot Testing",
       interviewQuestions: [
         {
           id: "boot-testing-1",
@@ -621,7 +621,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "data-jpa-hibernate",
-      name: "8.1 JPA, Hibernate & Repositories",
+      name: "JPA, Hibernate & Repositories",
       interviewQuestions: [
         {
           id: "data-jpa-1",
@@ -696,7 +696,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "data-transactions",
-      name: "8.2 Transactions",
+      name: "Transactions",
       interviewQuestions: [
         {
           id: "data-tx-1",
@@ -772,7 +772,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "data-query-pagination",
-      name: "8.3 Spring Data Query Methods & Pagination",
+      name: "Spring Data Query Methods & Pagination",
       interviewQuestions: [
         {
           id: "data-query-1",
@@ -848,7 +848,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "security-architecture",
-      name: "9.1 Security Architecture",
+      name: "Security Architecture",
       interviewQuestions: [
         {
           id: "security-arch-1",
@@ -925,7 +925,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "security-jwt-oauth2",
-      name: "9.2 JWT & OAuth2",
+      name: "JWT & OAuth2",
       interviewQuestions: [
         {
           id: "security-jwt-1",
@@ -999,7 +999,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "web-rest-controllers",
-      name: "10.1 REST Controllers & Exception Handling",
+      name: "REST Controllers & Exception Handling",
       interviewQuestions: [
         {
           id: "web-rest-1",
@@ -1074,7 +1074,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "web-webclient",
-      name: "10.2 WebClient & RestTemplate",
+      name: "WebClient & RestTemplate",
       interviewQuestions: [
         {
           id: "web-webclient-1",
@@ -1143,7 +1143,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "test-strategies",
-      name: "11.1 Testing Strategies & Slices",
+      name: "Testing Strategies & Slices",
       interviewQuestions: [
         {
           id: "test-strat-1",
@@ -1219,7 +1219,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "advanced-async-cache",
-      name: "12.1 Async, Scheduling & Caching",
+      name: "Async, Scheduling & Caching",
       interviewQuestions: [
         {
           id: "advanced-async-1",
@@ -1288,7 +1288,7 @@ export const springQuestions: CategoryData = {
     },
     {
       id: "advanced-batch",
-      name: "12.2 Spring Batch",
+      name: "Spring Batch",
       interviewQuestions: [
         {
           id: "advanced-batch-1",

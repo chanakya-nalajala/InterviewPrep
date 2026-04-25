@@ -2,7 +2,7 @@ import { CategoryData } from "../types";
 
 export const angularQuestions: CategoryData = {
   id: "angular",
-  name: "14. Angular Framework",
+  name: "Angular Framework",
   icon: "🅰️",
   color: "var(--red)",
   description:
@@ -10,7 +10,7 @@ export const angularQuestions: CategoryData = {
   sections: [
     {
       id: "ng-fundamentals",
-      name: "14.1 Fundamentals & Components",
+      name: "Fundamentals & Components",
       interviewQuestions: [
         {
           id: "ng-fund-1",
@@ -87,7 +87,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-di",
-      name: "14.2 Dependency Injection",
+      name: "Dependency Injection",
       interviewQuestions: [
         {
           id: "ng-di-1",
@@ -157,7 +157,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-rxjs",
-      name: "14.3 RxJS & Reactive Programming",
+      name: "RxJS & Reactive Programming",
       interviewQuestions: [
         {
           id: "ng-rxjs-1",
@@ -234,7 +234,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-signals",
-      name: "14.4 Signals (Angular 16+)",
+      name: "Signals (Angular 16+)",
       interviewQuestions: [
         {
           id: "ng-sig-1",
@@ -311,7 +311,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-forms",
-      name: "14.5 Forms",
+      name: "Forms",
       interviewQuestions: [
         {
           id: "ng-forms-1",
@@ -387,7 +387,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-routing",
-      name: "14.6 Routing",
+      name: "Routing",
       interviewQuestions: [
         {
           id: "ng-routing-1",
@@ -462,7 +462,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-state",
-      name: "14.7 State Management",
+      name: "State Management",
       interviewQuestions: [
         {
           id: "ng-state-1",
@@ -531,7 +531,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-performance",
-      name: "14.8 Performance Optimization",
+      name: "Performance Optimization",
       interviewQuestions: [
         {
           id: "ng-perf-1",
@@ -606,7 +606,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-testing",
-      name: "14.9 Testing",
+      name: "Testing",
       interviewQuestions: [
         {
           id: "ng-test-1",
@@ -680,7 +680,7 @@ export const angularQuestions: CategoryData = {
     },
     {
       id: "ng-advanced",
-      name: "14.10 Advanced Topics",
+      name: "Advanced Topics",
       interviewQuestions: [
         {
           id: "ng-adv-1",
