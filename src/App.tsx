@@ -1,12 +1,11 @@
-import { HashRouter, Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
-import { lazy, Suspense, ReactNode, useState } from "react";
+import { lazy, ReactNode, Suspense, useState } from "react";
 import Login from "./pages/Login";
 import "./styles/global.css";
 
 // Lazy load heavy pages for better initial load time
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const InterviewQuestions = lazy(() => import("./pages/Questions"));
 
 interface LayoutProps {
   children: ReactNode;
@@ -48,17 +47,6 @@ function Layout({ children }: LayoutProps) {
           >
             Interview<span style={{ color: "var(--amber)" }}>Prep</span>
           </span>
-          {/* Desktop Navigation */}
-          <div
-            style={{
-              display: "flex",
-              gap: 4,
-            }}
-            className="desktop-nav"
-          >
-            <NavItem to="/dashboard" label="Dashboard" />
-            <NavItem to="/interview" label="Interview Q&A" />
-          </div>
         </div>
 
         {/* Desktop User Menu */}
@@ -117,25 +105,12 @@ function Layout({ children }: LayoutProps) {
             gap: 8,
           }}
         >
-          <NavItem
-            to="/dashboard"
-            label="Dashboard"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <NavItem
-            to="/interview"
-            label="Interview Q&A"
-            onClick={() => setMobileMenuOpen(false)}
-          />
           <div
             style={{
               display: "flex",
               alignItems: "center",
               gap: 12,
               padding: "8px 12px",
-              marginTop: 8,
-              borderTop: "1px solid var(--border)",
-              paddingTop: 12,
             }}
           >
             <img
@@ -196,33 +171,6 @@ function Layout({ children }: LayoutProps) {
         }
       `}</style>
     </div>
-  );
-}
-
-interface NavItemProps {
-  to: string;
-  label: string;
-  onClick?: () => void;
-}
-
-function NavItem({ to, label, onClick }: NavItemProps) {
-  return (
-    <NavLink
-      to={to}
-      onClick={onClick}
-      style={({ isActive }) => ({
-        padding: "8px 12px",
-        borderRadius: 6,
-        fontSize: "0.8rem",
-        textDecoration: "none",
-        color: isActive ? "var(--amber)" : "var(--muted)",
-        background: isActive ? "var(--amber-glow)" : "transparent",
-        transition: "all 0.15s",
-        display: "block",
-      })}
-    >
-      {label}
-    </NavLink>
   );
 }
 
@@ -288,7 +236,6 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/interview" element={<InterviewQuestions />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Suspense>

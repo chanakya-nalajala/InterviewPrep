@@ -78,7 +78,6 @@ export function useProgress() {
         // Recalculate stats after updating
         const allQuestions = getAllQuestionsWithCategories();
         await recalculateStats(user.uid, allQuestions);
-
       } catch (error) {
         console.error("❌ Error updating progress:", error);
       }

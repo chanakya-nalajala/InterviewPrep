@@ -1,15 +1,27 @@
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { useProgress } from "../hooks/useProgress";
 import { useMemo, useState } from "react";
-import { ProgressStats, CategoryStats } from "../data/types";
+import {
+  CategoryData,
+  CategoryStats,
+  ProgressStats,
+  Question,
+  QuestionStatus,
+  TopicSection,
+} from "../data/types";
 import { StatCard } from "../components/StatCard.tsx";
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 import {
+  getAllQuestionsWithCategories,
   getOrganizedCategories,
   getTotalQuestionCount,
-  getAllQuestionsWithCategories,
 } from "../data/dataLoader";
+import { SearchBar } from "../components/SearchBar";
+import { Breadcrumb } from "../components/Breadcrumb";
+import { CategoryCard } from "../components/CategoryCard";
+import { SectionCard } from "../components/SectionCard";
+import { QuestionsList } from "../components/QuestionsList";
+import { exportSectionToPDF } from "../services/pdfExport";
 
 // Time-based greeting helper
 function getTimeOfDay(): string {
@@ -41,8 +53,14 @@ const GREETINGS = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const { progress, loading, error } = useProgress();
+  const {
+    progress,
+    loading,
+    error,
+    updateProgress,
+    getQuestionStatus,
+    getQuestionConfidence,
+  } = useProgress();
 
   // Combine time-based greeting with random message
   const [greeting] = useState(() => {
@@ -52,10 +70,127 @@ export default function Dashboard() {
     return `${timeGreeting}! ${randomMessage}`;
   });
 
+  // Questions component state
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<CategoryData | null>(
+    null,
+  );
+  const [selectedSection, setSelectedSection] = useState<TopicSection | null>(
+    null,
+  );
+  const [visibleHints, setVisibleHints] = useState<Set<string>>(new Set());
+  const [exportingPDF, setExportingPDF] = useState(false);
+
   // Get categories and question counts dynamically from JSON
   const categories = useMemo(() => getOrganizedCategories(), []);
   const totalQuestions = useMemo(() => getTotalQuestionCount(), []);
   const allQuestions = useMemo(() => getAllQuestionsWithCategories(), []);
+
+  // Safe fallbacks for progress functions
+  const safeGetStatus =
+    getQuestionStatus || (() => "pending" as QuestionStatus);
+  const safeGetConfidence = getQuestionConfidence || (() => 0);
+  const safeUpdateProgress = updateProgress || (async () => {});
+
+  // Helper functions for Questions
+  const getCategoryStats = (category: CategoryData) => {
+    let total = 0;
+    let done = 0;
+    category.sections.forEach((section) => {
+      section.interviewQuestions.forEach((q) => {
+        total++;
+        if (safeGetStatus(q.id) === "done") done++;
+      });
+      section.scenarioQuestions.forEach((q) => {
+        total++;
+        if (safeGetStatus(q.id) === "done") done++;
+      });
+    });
+    return { total, done };
+  };
+
+  const getFilteredCategories = () => {
+    if (!search) return categories;
+    const searchLower = search.toLowerCase();
+    return categories.filter((cat) => {
+      const nameMatch = cat.name.toLowerCase().includes(searchLower);
+      const descMatch = cat.description.toLowerCase().includes(searchLower);
+      const hasMatchingQuestions = cat.sections.some((section) => {
+        const sectionMatch = section.name.toLowerCase().includes(searchLower);
+        const questionMatch = [
+          ...section.interviewQuestions,
+          ...section.scenarioQuestions,
+        ].some(
+          (q) =>
+            q.question.toLowerCase().includes(searchLower) ||
+            q.hint.toLowerCase().includes(searchLower),
+        );
+        return sectionMatch || questionMatch;
+      });
+      return nameMatch || descMatch || hasMatchingQuestions;
+    });
+  };
+
+  const getFilteredSections = (category: CategoryData) => {
+    if (!search) return category.sections;
+    const searchLower = search.toLowerCase();
+    return category.sections.filter((section) => {
+      const nameMatch = section.name.toLowerCase().includes(searchLower);
+      const hasMatchingQuestions = [
+        ...section.interviewQuestions,
+        ...section.scenarioQuestions,
+      ].some(
+        (q) =>
+          q.question.toLowerCase().includes(searchLower) ||
+          q.hint.toLowerCase().includes(searchLower),
+      );
+      return nameMatch || hasMatchingQuestions;
+    });
+  };
+
+  const getFilteredQuestions = (questions: Question[]) => {
+    if (!search) return questions;
+    const searchLower = search.toLowerCase();
+    return questions.filter(
+      (q) =>
+        q.question.toLowerCase().includes(searchLower) ||
+        q.hint.toLowerCase().includes(searchLower),
+    );
+  };
+
+  const toggleHint = (id: string) => {
+    const newSet = new Set(visibleHints);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setVisibleHints(newSet);
+  };
+
+  const goBack = () => {
+    if (selectedSection) setSelectedSection(null);
+    else if (selectedCategory) setSelectedCategory(null);
+  };
+
+  const handleExportPDF = async () => {
+    if (!selectedSection || !selectedCategory) return;
+
+    setExportingPDF(true);
+    try {
+      await exportSectionToPDF(selectedSection, {
+        sectionName: selectedSection.name,
+        categoryName: selectedCategory.name,
+        categoryColor: selectedCategory.color,
+        includeHints: false,
+        includeAIAnswers: true,
+      });
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      alert("Failed to export PDF. Please try again.");
+    } finally {
+      setExportingPDF(false);
+    }
+  };
+
+  const filteredCategories = getFilteredCategories();
 
   // Calculate stats dynamically from question object
   const stats = useMemo<ProgressStats>(() => {
@@ -245,128 +380,161 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Per-Category Breakdown */}
-      <div className="card" style={{ marginBottom: 24 }}>
-        <h2
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "0.95rem",
-            marginBottom: 20,
-            color: "var(--muted)",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-          }}
-        >
-          Progress by Category
-        </h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {Object.entries(stats.byCategory).map(([categoryId, catStats]) => {
-            const pct = catStats.total
-              ? Math.round((catStats.done / catStats.total) * 100)
-              : 0;
-
-            // Find category info from loaded data
-            const categoryData = categories.find(
-              (cat) => cat.id === categoryId,
-            );
-            const info = categoryData
-              ? {
-                  icon: categoryData.icon,
-                  name: categoryData.name,
-                  color: categoryData.color,
-                }
-              : {
-                  icon: "📌",
-                  name: categoryId,
-                  color: "var(--text)",
-                };
-
-            return (
-              <div key={categoryId}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 6,
-                  }}
-                >
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: 8 }}
-                  >
-                    <span style={{ fontSize: "1rem" }}>{info.icon}</span>
-                    <span style={{ fontSize: "0.82rem", color: "var(--text)" }}>
-                      {info.name}
-                    </span>
-                  </div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
-                    {catStats.done}/{catStats.total} &nbsp;·&nbsp;
-                    <span
-                      style={{
-                        color: pct === 100 ? "var(--green)" : "var(--amber)",
-                      }}
-                    >
-                      {pct}%
-                    </span>
-                  </span>
-                </div>
-                <div className="progress-track">
-                  <div
-                    className="progress-fill"
-                    style={{
-                      width: `${pct}%`,
-                      background: pct === 100 ? "var(--green)" : info.color,
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="card">
-        <h2
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "0.95rem",
-            marginBottom: 16,
-            color: "var(--muted)",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-          }}
-        >
-          Quick Actions
-        </h2>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/interview")}
-          style={{
-            width: "100%",
-            justifyContent: "center",
-            padding: "12px 14px",
-            minHeight: "48px",
-          }}
-        >
-          📋 Continue Learning
-        </button>
-        {stats.revisit > 0 && (
-          <div
+      {/* Questions Section */}
+      <div style={{ marginTop: 32 }}>
+        {/* Questions Header */}
+        <div style={{ marginBottom: 20 }}>
+          <h2
             style={{
-              marginTop: 16,
-              padding: "12px 14px",
-              background: "var(--amber-glow)",
-              border: "1px solid var(--amber-dim)",
-              borderRadius: "var(--radius)",
-              fontSize: "0.8rem",
-              color: "var(--amber)",
-              lineHeight: 1.5,
+              fontFamily: "var(--font-display)",
+              fontSize: "1.4rem",
+              fontWeight: 700,
+              letterSpacing: "-0.02em",
+              marginBottom: 8,
             }}
           >
-            ⚡ You have <strong>{stats.revisit}</strong> question
-            {stats.revisit > 1 ? "s" : ""} marked for revisit!
+            📋 Interview Q&A
+          </h2>
+          <p
+            className="text-muted"
+            style={{ fontSize: "0.82rem", lineHeight: 1.5 }}
+          >
+            {!selectedCategory &&
+              !selectedSection &&
+              `${categories.length} categories • 818 questions with expert hints`}
+            {selectedCategory &&
+              !selectedSection &&
+              `${selectedCategory.name} • ${getCategoryStats(selectedCategory).total} questions`}
+            {selectedSection && `${selectedSection.name}`}
+          </p>
+        </div>
+
+        {/* Breadcrumb Navigation with Action Buttons */}
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            marginBottom: selectedCategory || selectedSection ? 0 : 20,
+            flexWrap: "wrap",
+          }}
+        >
+          <Breadcrumb
+            selectedCategory={selectedCategory}
+            selectedSection={selectedSection}
+            onBack={goBack}
+            onCategoryClick={() => setSelectedSection(null)}
+          />
+
+          {/* Export PDF Button - Only show when viewing questions */}
+          {selectedSection && selectedCategory && (
+            <button
+              onClick={handleExportPDF}
+              disabled={exportingPDF}
+              className="btn"
+              style={{
+                padding: "8px 16px",
+                background: exportingPDF ? "var(--surface)" : "var(--green)15",
+                color: exportingPDF ? "var(--muted)" : "var(--green)",
+                border: `1px solid ${exportingPDF ? "var(--border)" : "var(--green)40"}`,
+                borderRadius: 6,
+                cursor: exportingPDF ? "wait" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: "0.8rem",
+                minHeight: "36px",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                if (!exportingPDF) {
+                  e.currentTarget.style.background = "var(--green)25";
+                  e.currentTarget.style.borderColor = "var(--green)60";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!exportingPDF) {
+                  e.currentTarget.style.background = "var(--green)15";
+                  e.currentTarget.style.borderColor = "var(--green)40";
+                }
+              }}
+            >
+              <span style={{ fontSize: "1rem" }}>
+                {exportingPDF ? "⏳" : "📄"}
+              </span>
+              {exportingPDF ? "Generating PDF..." : "Export to PDF"}
+            </button>
+          )}
+        </div>
+
+        {/* Search Bar */}
+        <SearchBar
+          value={search}
+          onChange={setSearch}
+          placeholder={`Search ${selectedCategory ? selectedCategory.name : "all categories"}...`}
+        />
+
+        {/* LEVEL 1: Category Grid */}
+        {!selectedCategory && !selectedSection && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: 14,
+            }}
+          >
+            {filteredCategories.map((category) => (
+              <CategoryCard
+                key={category.id}
+                category={category}
+                stats={getCategoryStats(category)}
+                onClick={() => setSelectedCategory(category)}
+              />
+            ))}
           </div>
+        )}
+
+        {/* LEVEL 2: Sections List */}
+        {selectedCategory && !selectedSection && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {getFilteredSections(selectedCategory).map((section) => {
+              const totalQuestions =
+                section.interviewQuestions.length +
+                section.scenarioQuestions.length;
+              const doneQuestions = [
+                ...section.interviewQuestions,
+                ...section.scenarioQuestions,
+              ].filter((q) => safeGetStatus(q.id) === "done").length;
+              return (
+                <SectionCard
+                  key={section.id}
+                  section={section}
+                  categoryColor={selectedCategory.color}
+                  stats={{ total: totalQuestions, done: doneQuestions }}
+                  onClick={() => setSelectedSection(section)}
+                />
+              );
+            })}
+          </div>
+        )}
+
+        {/* LEVEL 3: Questions */}
+        {selectedSection && selectedCategory && (
+          <QuestionsList
+            interviewQuestions={getFilteredQuestions(
+              selectedSection.interviewQuestions,
+            )}
+            scenarioQuestions={getFilteredQuestions(
+              selectedSection.scenarioQuestions,
+            )}
+            categoryColor={selectedCategory.color}
+            visibleHints={visibleHints}
+            onToggleHint={toggleHint}
+            getQuestionStatus={safeGetStatus}
+            getQuestionConfidence={safeGetConfidence}
+            onUpdateProgress={safeUpdateProgress}
+          />
         )}
       </div>
     </div>

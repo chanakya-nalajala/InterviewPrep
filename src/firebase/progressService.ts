@@ -199,7 +199,6 @@ export async function recalculateStats(
     stats,
     lastSync: Date.now(),
   });
-
 }
 
 /**
