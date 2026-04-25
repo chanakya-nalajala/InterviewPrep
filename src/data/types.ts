@@ -23,8 +23,6 @@ export interface CategoryData {
   sections: TopicSection[];
 }
 
-export type InterviewData = CategoryData[];
-
 // Progress Tracking Types
 export type QuestionStatus = "pending" | "done" | "revisit" | "skipped";
 

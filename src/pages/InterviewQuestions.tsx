@@ -6,6 +6,7 @@ import { javaQuestions } from "../data/questions/javaQuestions";
 import { springQuestions } from "../data/questions/springQuestions";
 import { microservicesQuestions } from "../data/questions/microservicesQuestions";
 import { angularQuestions } from "../data/questions/angularQuestions";
+import { kafkaQuestions } from "../data/questions/kafkaQuestions";
 import { CategoryData, Question, QuestionStatus } from "../data/types";
 import { useProgress } from "../hooks/useProgress";
 
@@ -151,6 +152,7 @@ export default function InterviewQuestions() {
     springWebQuestions,
     microservicesQuestions,
     angularQuestions,
+    kafkaQuestions,
   ];
 
   const toggleSection = (sectionId: string) => {

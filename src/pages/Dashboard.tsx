@@ -12,6 +12,7 @@ import { javaQuestions } from "../data/questions/javaQuestions";
 import { springQuestions } from "../data/questions/springQuestions";
 import { microservicesQuestions } from "../data/questions/microservicesQuestions";
 import { angularQuestions } from "../data/questions/angularQuestions";
+import { kafkaQuestions } from "../data/questions/kafkaQuestions";
 
 const CATEGORY_INFO: Record<
   string,
@@ -37,6 +38,7 @@ const CATEGORY_INFO: Record<
   "spring-web": { icon: "🌐", name: "Spring Web", color: "var(--indigo)" },
   microservices: { icon: "🏗️", name: "Microservices", color: "var(--purple)" },
   angular: { icon: "🅰️", name: "Angular", color: "var(--red)" },
+  kafka: { icon: "📨", name: "Apache Kafka", color: "var(--purple)" },
 };
 
 // Map to get category from question ID
@@ -160,6 +162,15 @@ angularQuestions.sections.forEach((section) => {
   });
 });
 
+kafkaQuestions.sections.forEach((section) => {
+  section.interviewQuestions.forEach((q) => {
+    QUESTION_TO_CATEGORY[q.id] = "kafka";
+  });
+  section.scenarioQuestions.forEach((q) => {
+    QUESTION_TO_CATEGORY[q.id] = "kafka";
+  });
+});
+
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -169,10 +180,10 @@ export default function Dashboard() {
   const stats = useMemo<ProgressStats>(() => {
     if (!progress || !progress.questions) {
       return {
-        total: 738,
+        total: 818,
         done: 0,
         revisit: 0,
-        pending: 738,
+        pending: 818,
         skipped: 0,
         avgConfidence: 0,
         byCategory: {},
@@ -231,6 +242,7 @@ export default function Dashboard() {
     byCategory["spring-web"].total = 71;
     byCategory["microservices"].total = 60;
     byCategory["angular"].total = 100;
+    byCategory["kafka"].total = 80;
 
     // Calculate pending for each category
     Object.keys(byCategory).forEach((catId) => {
@@ -241,10 +253,10 @@ export default function Dashboard() {
     });
 
     return {
-      total: 738,
+      total: 818,
       done,
       revisit,
-      pending: 738 - done - revisit - skipped,
+      pending: 818 - done - revisit - skipped,
       skipped,
       avgConfidence:
         confidenceCount > 0 ? totalConfidence / confidenceCount : 0,
