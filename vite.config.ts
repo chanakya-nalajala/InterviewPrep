@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/interview-prep/', // Change to your GitHub repo name
+  base: '/InterviewPrep/', // Must match GitHub repo name exactly (case-sensitive)
 })
