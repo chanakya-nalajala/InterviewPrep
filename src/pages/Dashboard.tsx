@@ -23,7 +23,6 @@ import { SectionCard } from "../components/SectionCard";
 import { QuestionsList } from "../components/QuestionsList";
 import { exportSectionToPDF } from "../services/pdfExport";
 import { NoResults } from "../components/EmptyState";
-import { Confetti, SuccessMessage } from "../components/Confetti";
 
 // Time-based greeting helper
 function getTimeOfDay(): string {
@@ -82,9 +81,6 @@ export default function Dashboard() {
   );
   const [visibleHints, setVisibleHints] = useState<Set<string>>(new Set());
   const [exportingPDF, setExportingPDF] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [celebrationMessage, setCelebrationMessage] = useState("");
-  const [showCelebration, setShowCelebration] = useState(false);
 
   // Get categories and question counts dynamically from JSON
   const categories = useMemo(() => getOrganizedCategories(), []);
@@ -175,123 +171,7 @@ export default function Dashboard() {
     else if (selectedCategory) setSelectedCategory(null);
   };
 
-  // Celebration trigger function
-  const triggerCelebration = (message: string) => {
-    setShowConfetti(true);
-    setCelebrationMessage(message);
-    setShowCelebration(true);
 
-    // Hide celebration message after 3 seconds
-    setTimeout(() => {
-      setShowCelebration(false);
-    }, 3000);
-
-    // Reset confetti trigger after animation completes
-    setTimeout(() => {
-      setShowConfetti(false);
-    }, 3500);
-  };
-
-  // Wrapped progress update with celebration check
-  const handleProgressUpdate = async (
-    id: string,
-    status: QuestionStatus,
-    confidence: number,
-  ) => {
-    // Get current done count before update
-    const currentDoneCount = stats.done;
-
-    // Check if this question was already done
-    const wasAlreadyDone = safeGetStatus(id) === "done";
-
-    // Update the progress
-    await safeUpdateProgress(id, status, confidence);
-
-    // Celebrate EVERY question marked as done!
-    if (status === "done" && !wasAlreadyDone) {
-      const newDoneCount = currentDoneCount + 1;
-
-      // Choose message based on milestone
-      let celebrationMessage: string;
-
-      if (currentDoneCount === 0) {
-        celebrationMessage = "🎯 First One Down! You're on fire!";
-      } else if (newDoneCount % 10 === 0) {
-        celebrationMessage = `🚀 ${newDoneCount} Questions! You're crushing it!`;
-      } else if (newDoneCount % 5 === 0) {
-        celebrationMessage = `⚡ ${newDoneCount} Done! Keep going!`;
-      } else {
-        const messages = [
-          "Awesome! 🎉",
-          "Nailed it! ✨",
-          "You're on fire! 🔥",
-          "Keep it up! 💪",
-          "Fantastic! 🌟",
-          "Well done! 👏",
-        ];
-        celebrationMessage =
-          messages[Math.floor(Math.random() * messages.length)];
-      }
-
-      triggerCelebration(celebrationMessage);
-
-      // Also check for section/category completion with delay
-      if (selectedSection) {
-        setTimeout(() => {
-          const allQuestionsInSection = [
-            ...selectedSection.interviewQuestions,
-            ...selectedSection.scenarioQuestions,
-          ];
-          const completedInSection = allQuestionsInSection.filter(
-            (q) => safeGetStatus(q.id) === "done",
-          ).length;
-
-          // Section complete?
-          if (completedInSection === allQuestionsInSection.length) {
-            // Check if entire category is complete
-            if (selectedCategory) {
-              let allSectionsComplete = true;
-              for (const section of selectedCategory.sections) {
-                const allQs = [
-                  ...section.interviewQuestions,
-                  ...section.scenarioQuestions,
-                ];
-                const doneQs = allQs.filter(
-                  (q) => safeGetStatus(q.id) === "done",
-                ).length;
-                if (doneQs < allQs.length) {
-                  allSectionsComplete = false;
-                  break;
-                }
-              }
-
-              if (allSectionsComplete) {
-                console.log(
-                  `🏆 EXTRA CELEBRATION: Category "${selectedCategory.name}" Complete!`,
-                );
-                // Trigger another celebration for category completion
-                setTimeout(() => {
-                  triggerCelebration(
-                    `🏆 INCREDIBLE! Category "${selectedCategory.name}" Complete!`,
-                  );
-                }, 1000);
-              } else {
-                console.log(
-                  `✨ EXTRA CELEBRATION: Section "${selectedSection.name}" Complete!`,
-                );
-                // Trigger another celebration for section completion
-                setTimeout(() => {
-                  triggerCelebration(
-                    `✨ Section Complete: ${selectedSection.name}!`,
-                  );
-                }, 1000);
-              }
-            }
-          }
-        }, 800);
-      }
-    }
-  };
 
   const handleExportPDF = async () => {
     if (!selectedSection || !selectedCategory) return;
@@ -459,65 +339,31 @@ export default function Dashboard() {
     : 0;
 
   return (
-    <>
-      {/* Confetti celebration */}
-      <Confetti trigger={showConfetti} />
-      {showCelebration && (
-        <SuccessMessage message={celebrationMessage} show={showCelebration} />
-      )}
-
-      <div className="animate-in" style={{ padding: "0 0 40px" }}>
+    <div className="animate-in" style={{ padding: "0 0 40px" }}>
         {/* Hero */}
         <div style={{ marginBottom: 24 }}>
-          <div
+          <p
+            className="text-muted"
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 12,
+              fontSize: "1rem",
+              letterSpacing: "0.01em",
+              marginBottom: 6,
+              fontWeight: 700,
             }}
           >
-            <div>
-              <p
-                className="text-muted"
-                style={{
-                  fontSize: "1rem",
-                  letterSpacing: "0.01em",
-                  marginBottom: 6,
-                  fontWeight: 700,
-                }}
-              >
-                {greeting}
-              </p>
-              <h1
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
-                  fontWeight: 700,
-                  letterSpacing: "-0.02em",
-                  wordBreak: "break-word",
-                }}
-              >
-                {user?.displayName?.split(" ")[0]}'s Prep Board
-              </h1>
-            </div>
-            {/* Test button for confetti - REMOVE AFTER TESTING */}
-            <button
-              onClick={() => {
-                console.log("TEST BUTTON CLICKED!");
-                triggerCelebration("🎉 Test Celebration!");
-              }}
-              className="btn btn-primary"
-              style={{
-                fontSize: "0.75rem",
-                pointerEvents: "auto",
-                cursor: "pointer",
-              }}
-            >
-              Test Confetti 🎊
-            </button>
-          </div>
+            {greeting}
+          </p>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
+              fontWeight: 700,
+              letterSpacing: "-0.02em",
+              wordBreak: "break-word",
+            }}
+          >
+            {user?.displayName?.split(" ")[0]}'s Prep Board
+          </h1>
         </div>
 
         {/* Overview Stats */}
@@ -786,12 +632,11 @@ export default function Dashboard() {
               onToggleHint={toggleHint}
               getQuestionStatus={safeGetStatus}
               getQuestionConfidence={safeGetConfidence}
-              onUpdateProgress={handleProgressUpdate}
+              onUpdateProgress={safeUpdateProgress}
             />
           )}
         </div>
       </div>
-    </>
   );
 }
 
