@@ -1,7 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useProgress } from "../hooks/useProgress";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ProgressStats, CategoryStats } from "../data/types";
 import {
   CATEGORY_INFO,
@@ -10,12 +10,46 @@ import {
 import { StatCard } from "../components/StatCard.tsx";
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 
+// Time-based greeting helper
+function getTimeOfDay(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  if (hour < 21) return "Good evening";
+  return "Good night";
+}
 
+// Random greeting messages - perky and energetic!
+const GREETINGS = [
+  "Ready to crush that interview? Let's go! 🚀",
+  "Time to level up your skills! 💪",
+  "You're on fire! Keep the momentum going! 🔥",
+  "Let's ace this together! 🎯",
+  "Your dream job is waiting - let's prep! ✨",
+  "Feeling unstoppable today? You should! 💫",
+  "Let's turn those nerves into confidence! ⚡",
+  "Practice time! You're getting better every day! 📈",
+  "Ready to show them what you've got? 🌟",
+  "Let's make today count! 🎉",
+  "Time to shine - you've got this! ✨",
+  "Bringing your A-game today? Absolutely! 🏆",
+  "Let's do this! Success is just around the corner! 🎊",
+  "Feeling powerful? You are! 💥",
+  "Let's turn preparation into domination! 🚀",
+];
 
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { progress, loading, error } = useProgress();
+
+  // Combine time-based greeting with random message
+  const [greeting] = useState(() => {
+    const timeGreeting = getTimeOfDay();
+    const randomMessage =
+      GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+    return `${timeGreeting}! ${randomMessage}`;
+  });
 
   // Calculate stats dynamically from questions object
   const stats = useMemo<ProgressStats>(() => {
@@ -123,19 +157,19 @@ export default function Dashboard() {
         <p
           className="text-muted"
           style={{
-            fontSize: "0.75rem",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
+            fontSize: "1rem",
+            letterSpacing: "0.01em",
             marginBottom: 6,
+            fontWeight: 700,
           }}
         >
-          Welcome back
+          {greeting}
         </p>
         <h1
           style={{
             fontFamily: "var(--font-display)",
             fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
-            fontWeight: 800,
+            fontWeight: 700,
             letterSpacing: "-0.02em",
             wordBreak: "break-word",
           }}
