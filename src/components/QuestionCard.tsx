@@ -51,7 +51,7 @@ export function QuestionCard({
       const response = await getAIAnswer(
         question.id,
         question.question,
-        question.hint
+        question.hint,
       );
 
       if (response.error) {

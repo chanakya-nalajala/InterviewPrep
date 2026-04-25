@@ -12,6 +12,7 @@ import { Breadcrumb } from "../components/Breadcrumb";
 import { CategoryCard } from "../components/CategoryCard";
 import { SectionCard } from "../components/SectionCard";
 import { QuestionsList } from "../components/QuestionsList";
+import { exportSectionToPDF } from "../services/pdfExport";
 
 export default function Questions() {
   const [search, setSearch] = useState("");
@@ -24,6 +25,7 @@ export default function Questions() {
   const [visibleHints, setVisibleHints] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exportingPDF, setExportingPDF] = useState(false);
 
   const { updateProgress, getQuestionStatus, getQuestionConfidence } =
     useProgress();
@@ -245,6 +247,26 @@ export default function Questions() {
     else if (selectedCategory) setSelectedCategory(null);
   };
 
+  const handleExportPDF = async () => {
+    if (!selectedSection || !selectedCategory) return;
+
+    setExportingPDF(true);
+    try {
+      await exportSectionToPDF(selectedSection, {
+        sectionName: selectedSection.name,
+        categoryName: selectedCategory.name,
+        categoryColor: selectedCategory.color,
+        includeHints: false,
+        includeAIAnswers: true,
+      });
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      alert("Failed to export PDF. Please try again.");
+    } finally {
+      setExportingPDF(false);
+    }
+  };
+
   const filteredCategories = getFilteredCategories();
 
   // Show loading spinner while questions are being loaded
@@ -281,13 +303,64 @@ export default function Questions() {
         </p>
       </div>
 
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb
-        selectedCategory={selectedCategory}
-        selectedSection={selectedSection}
-        onBack={goBack}
-        onCategoryClick={() => setSelectedSection(null)}
-      />
+      {/* Breadcrumb Navigation with Export Button */}
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          marginBottom: selectedCategory || selectedSection ? 0 : 20,
+          flexWrap: "wrap",
+        }}
+      >
+        <Breadcrumb
+          selectedCategory={selectedCategory}
+          selectedSection={selectedSection}
+          onBack={goBack}
+          onCategoryClick={() => setSelectedSection(null)}
+        />
+
+        {/* Export PDF Button - Only show when viewing questions */}
+        {selectedSection && selectedCategory && (
+          <button
+            onClick={handleExportPDF}
+            disabled={exportingPDF}
+            className="btn"
+            style={{
+              padding: "8px 16px",
+              background: exportingPDF ? "var(--surface)" : "var(--green)15",
+              color: exportingPDF ? "var(--muted)" : "var(--green)",
+              border: `1px solid ${exportingPDF ? "var(--border)" : "var(--green)40"}`,
+              borderRadius: 6,
+              cursor: exportingPDF ? "wait" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: "0.8rem",
+              minHeight: "36px",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              if (!exportingPDF) {
+                e.currentTarget.style.background = "var(--green)25";
+                e.currentTarget.style.borderColor = "var(--green)60";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!exportingPDF) {
+                e.currentTarget.style.background = "var(--green)15";
+                e.currentTarget.style.borderColor = "var(--green)40";
+              }
+            }}
+          >
+            <span style={{ fontSize: "1rem" }}>
+              {exportingPDF ? "⏳" : "📄"}
+            </span>
+            {exportingPDF ? "Generating PDF..." : "Export to PDF"}
+          </button>
+        )}
+      </div>
 
       {/* Search Bar */}
       <SearchBar

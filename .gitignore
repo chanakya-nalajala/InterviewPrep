@@ -19,6 +19,7 @@ npm-debug.log*
 *.swp
 *.swo
 .DS_Store
+*.md
 
 # Optional: Uncomment if package-lock.json contains private registry URLs
 # package-lock.json

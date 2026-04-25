@@ -318,7 +318,7 @@ label {
 
 .markdown-content h1 {
   font-size: 1.1rem;
-  border-bottom: 1px solid var(--purple)30;
+  border-bottom: 1px solid var(--purple) 30;
   padding-bottom: 6px;
 }
 
