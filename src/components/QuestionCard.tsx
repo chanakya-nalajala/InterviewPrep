@@ -1,5 +1,9 @@
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Question, QuestionStatus } from "../data/types.ts";
 import { StatusButton } from "./StatusButton.tsx";
+import { getAIAnswer } from "../services/openai";
 
 interface QuestionCardProps {
   question: Question;
@@ -20,6 +24,39 @@ export function QuestionCard({
   confidence,
   onUpdateProgress,
 }: QuestionCardProps) {
+  const [aiAnswer, setAiAnswer] = useState<string>("");
+  const [showAiAnswer, setShowAiAnswer] = useState(false);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [aiError, setAiError] = useState<string>("");
+
+  const handleAskAI = async () => {
+    if (aiAnswer && showAiAnswer) {
+      // Toggle off if already showing
+      setShowAiAnswer(false);
+      return;
+    }
+
+    if (aiAnswer) {
+      // Show cached answer
+      setShowAiAnswer(true);
+      return;
+    }
+
+    // Fetch new answer
+    setIsLoadingAI(true);
+    setAiError("");
+
+    const response = await getAIAnswer(question.question, question.hint);
+
+    setIsLoadingAI(false);
+
+    if (response.error) {
+      setAiError(response.error);
+    } else {
+      setAiAnswer(response.answer);
+      setShowAiAnswer(true);
+    }
+  };
   return (
     <div
       style={{
@@ -42,40 +79,88 @@ export function QuestionCard({
         {question.question}
       </p>
 
-      {/* Hint Toggle Button */}
-      <button
-        onClick={onToggleHint}
-        style={{
-          fontSize: "0.72rem",
-          padding: "6px 14px",
-          background: showHint ? `${color}20` : "var(--surface)",
-          color: showHint ? color : "var(--muted)",
-          border: `1px solid ${showHint ? `${color}40` : "var(--border)"}`,
-          borderRadius: 4,
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          transition: "all 0.15s",
-          minHeight: "36px",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = `${color}60`;
-          e.currentTarget.style.background = `${color}15`;
-        }}
-        onMouseLeave={(e) => {
-          if (!showHint) {
-            e.currentTarget.style.borderColor = "var(--border)";
-            e.currentTarget.style.background = "var(--surface)";
-          } else {
-            e.currentTarget.style.borderColor = `${color}40`;
-            e.currentTarget.style.background = `${color}20`;
-          }
-        }}
-      >
-        <span style={{ fontSize: "0.9rem" }}>{showHint ? "🔓" : "💡"}</span>
-        {showHint ? "Hide Hint" : "Show Hint"}
-      </button>
+      {/* Action Buttons */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {/* Hint Toggle Button */}
+        <button
+          onClick={onToggleHint}
+          style={{
+            fontSize: "0.72rem",
+            padding: "6px 14px",
+            background: showHint ? `${color}20` : "var(--surface)",
+            color: showHint ? color : "var(--muted)",
+            border: `1px solid ${showHint ? `${color}40` : "var(--border)"}`,
+            borderRadius: 4,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            transition: "all 0.15s",
+            minHeight: "36px",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = `${color}60`;
+            e.currentTarget.style.background = `${color}15`;
+          }}
+          onMouseLeave={(e) => {
+            if (!showHint) {
+              e.currentTarget.style.borderColor = "var(--border)";
+              e.currentTarget.style.background = "var(--surface)";
+            } else {
+              e.currentTarget.style.borderColor = `${color}40`;
+              e.currentTarget.style.background = `${color}20`;
+            }
+          }}
+        >
+          <span style={{ fontSize: "0.9rem" }}>{showHint ? "🔓" : "💡"}</span>
+          {showHint ? "Hide Hint" : "Show Hint"}
+        </button>
+
+        {/* Ask AI Button */}
+        <button
+          onClick={handleAskAI}
+          disabled={isLoadingAI}
+          style={{
+            fontSize: "0.72rem",
+            padding: "6px 14px",
+            background: showAiAnswer ? "var(--purple)20" : "var(--surface)",
+            color: showAiAnswer ? "var(--purple)" : "var(--muted)",
+            border: `1px solid ${showAiAnswer ? "var(--purple)40" : "var(--border)"}`,
+            borderRadius: 4,
+            cursor: isLoadingAI ? "wait" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            transition: "all 0.15s",
+            minHeight: "36px",
+            opacity: isLoadingAI ? 0.6 : 1,
+          }}
+          onMouseEnter={(e) => {
+            if (!isLoadingAI) {
+              e.currentTarget.style.borderColor = "var(--purple)60";
+              e.currentTarget.style.background = "var(--purple)15";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!showAiAnswer && !isLoadingAI) {
+              e.currentTarget.style.borderColor = "var(--border)";
+              e.currentTarget.style.background = "var(--surface)";
+            } else if (showAiAnswer) {
+              e.currentTarget.style.borderColor = "var(--purple)40";
+              e.currentTarget.style.background = "var(--purple)20";
+            }
+          }}
+        >
+          <span style={{ fontSize: "0.9rem" }}>
+            {isLoadingAI ? "⏳" : showAiAnswer ? "🤖" : "✨"}
+          </span>
+          {isLoadingAI
+            ? "Thinking..."
+            : showAiAnswer
+              ? "Hide AI Answer"
+              : "Ask AI"}
+        </button>
+      </div>
 
       {/* Hint Display */}
       {showHint && (
@@ -111,6 +196,85 @@ export function QuestionCard({
               }}
             >
               {question.hint}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* AI Answer Display */}
+      {showAiAnswer && aiAnswer && (
+        <div
+          style={{
+            marginTop: 12,
+            padding: "14px 16px",
+            background: "var(--purple)08",
+            border: "1px solid var(--purple)30",
+            borderLeft: "3px solid var(--purple)",
+            borderRadius: 4,
+          }}
+        >
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "var(--purple)",
+                marginTop: 2,
+              }}
+            >
+              🤖 AI Answer:
+            </span>
+          </div>
+          <div
+            className="markdown-content"
+            style={{
+              fontSize: "0.82rem",
+              lineHeight: 1.6,
+              color: "var(--text)",
+            }}
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {aiAnswer}
+            </ReactMarkdown>
+          </div>
+        </div>
+      )}
+
+      {/* AI Error Display */}
+      {aiError && (
+        <div
+          style={{
+            marginTop: 12,
+            padding: "12px 14px",
+            background: "var(--red)08",
+            border: "1px solid var(--red)30",
+            borderLeft: "3px solid var(--red)",
+            borderRadius: 4,
+          }}
+        >
+          <div style={{ display: "flex", gap: 8 }}>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "var(--red)",
+                marginTop: 2,
+              }}
+            >
+              Error:
+            </span>
+            <p
+              style={{
+                fontSize: "0.82rem",
+                lineHeight: 1.5,
+                color: "var(--text)",
+              }}
+            >
+              {aiError}
             </p>
           </div>
         </div>
