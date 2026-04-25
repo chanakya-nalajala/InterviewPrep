@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Question, QuestionStatus } from "../data/types.ts";
 import { StatusButton } from "./StatusButton.tsx";
-import { getAIAnswer } from "../services/openai";
+import { getCachedAIAnswer } from "../firebase/aiAnswersService";
 
 interface QuestionCardProps {
   question: Question;
@@ -24,51 +24,30 @@ export function QuestionCard({
   confidence,
   onUpdateProgress,
 }: QuestionCardProps) {
-  const [aiAnswer, setAiAnswer] = useState<string>("");
-  const [showAiAnswer, setShowAiAnswer] = useState(false);
-  const [isLoadingAI, setIsLoadingAI] = useState(false);
-  const [aiError, setAiError] = useState<string>("");
-  const [isFromCache, setIsFromCache] = useState(false);
+  const [answer, setAnswer] = useState<string>("");
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
 
-  const handleAskAI = async () => {
-    if (aiAnswer && showAiAnswer) {
-      // Toggle off if already showing
-      setShowAiAnswer(false);
-      return;
-    }
-
-    if (aiAnswer) {
-      // Show cached answer (in component state)
-      setShowAiAnswer(true);
-      return;
-    }
-
-    // Fetch answer (cache-first: checks Firebase → OpenAI API → saves to cache)
-    setIsLoadingAI(true);
-    setAiError("");
-
-    try {
-      const response = await getAIAnswer(
-        question.id,
-        question.question,
-        question.hint,
-      );
-
-      if (response.error) {
-        setAiError(response.error);
-        setShowAiAnswer(false);
-      } else {
-        setAiAnswer(response.answer);
-        setShowAiAnswer(true);
-        setIsFromCache(response.fromCache || false);
+  // Load cached answer on mount
+  useEffect(() => {
+    const loadAnswer = async () => {
+      setIsLoadingAnswer(true);
+      try {
+        const cachedAnswer = await getCachedAIAnswer(question.id);
+        if (cachedAnswer) {
+          setAnswer(cachedAnswer);
+        }
+      } catch (error) {
+        console.error("Error loading answer:", error);
+      } finally {
+        setIsLoadingAnswer(false);
       }
-    } catch (error: any) {
-      console.error("Error getting AI answer:", error);
-      setAiError("Unexpected error occurred. Please try again.");
-      setShowAiAnswer(false);
-    } finally {
-      setIsLoadingAI(false);
-    }
+    };
+    loadAnswer();
+  }, [question.id]);
+
+  const handleToggleAnswer = () => {
+    setShowAnswer(!showAnswer);
   };
   return (
     <div
@@ -129,50 +108,45 @@ export function QuestionCard({
           {showHint ? "Hide Hint" : "Show Hint"}
         </button>
 
-        {/* Ask AI Button */}
-        <button
-          onClick={handleAskAI}
-          disabled={isLoadingAI}
-          style={{
-            fontSize: "0.72rem",
-            padding: "6px 14px",
-            background: showAiAnswer ? "var(--purple)20" : "var(--surface)",
-            color: showAiAnswer ? "var(--purple)" : "var(--muted)",
-            border: `1px solid ${showAiAnswer ? "var(--purple)40" : "var(--border)"}`,
-            borderRadius: 4,
-            cursor: isLoadingAI ? "wait" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            transition: "all 0.15s",
-            minHeight: "36px",
-            opacity: isLoadingAI ? 0.6 : 1,
-          }}
-          onMouseEnter={(e) => {
-            if (!isLoadingAI) {
+        {/* Show Answer Button */}
+        {answer && (
+          <button
+            onClick={handleToggleAnswer}
+            disabled={isLoadingAnswer}
+            style={{
+              fontSize: "0.72rem",
+              padding: "6px 14px",
+              background: showAnswer ? "var(--purple)20" : "var(--surface)",
+              color: showAnswer ? "var(--purple)" : "var(--muted)",
+              border: `1px solid ${showAnswer ? "var(--purple)40" : "var(--border)"}`,
+              borderRadius: 4,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              transition: "all 0.15s",
+              minHeight: "36px",
+            }}
+            onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "var(--purple)60";
               e.currentTarget.style.background = "var(--purple)15";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!showAiAnswer && !isLoadingAI) {
-              e.currentTarget.style.borderColor = "var(--border)";
-              e.currentTarget.style.background = "var(--surface)";
-            } else if (showAiAnswer) {
-              e.currentTarget.style.borderColor = "var(--purple)40";
-              e.currentTarget.style.background = "var(--purple)20";
-            }
-          }}
-        >
-          <span style={{ fontSize: "0.9rem" }}>
-            {isLoadingAI ? "⏳" : showAiAnswer ? "🤖" : "✨"}
-          </span>
-          {isLoadingAI
-            ? "Thinking..."
-            : showAiAnswer
-              ? "Hide AI Answer"
-              : "Ask AI"}
-        </button>
+            }}
+            onMouseLeave={(e) => {
+              if (!showAnswer) {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.background = "var(--surface)";
+              } else {
+                e.currentTarget.style.borderColor = "var(--purple)40";
+                e.currentTarget.style.background = "var(--purple)20";
+              }
+            }}
+          >
+            <span style={{ fontSize: "0.9rem" }}>
+              {showAnswer ? "📖" : "💡"}
+            </span>
+            {showAnswer ? "Hide Answer" : "Show Answer"}
+          </button>
+        )}
       </div>
 
       {/* Hint Display */}
@@ -214,8 +188,8 @@ export function QuestionCard({
         </div>
       )}
 
-      {/* AI Answer Display */}
-      {showAiAnswer && aiAnswer && (
+      {/* Answer Display */}
+      {showAnswer && answer && (
         <div
           style={{
             marginTop: 12,
@@ -231,9 +205,6 @@ export function QuestionCard({
               display: "flex",
               gap: 8,
               marginBottom: 10,
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
             }}
           >
             <span
@@ -246,25 +217,8 @@ export function QuestionCard({
                 marginTop: 2,
               }}
             >
-              🤖 AI Answer:
+              📖 Answer:
             </span>
-            {isFromCache && (
-              <span
-                style={{
-                  fontSize: "0.65rem",
-                  padding: "2px 8px",
-                  background: "var(--cyan)15",
-                  color: "var(--cyan)",
-                  borderRadius: 4,
-                  border: "1px solid var(--cyan)40",
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                💾 Cached
-              </span>
-            )}
           </div>
           <div
             className="markdown-content"
@@ -275,46 +229,8 @@ export function QuestionCard({
             }}
           >
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {aiAnswer}
+              {answer}
             </ReactMarkdown>
-          </div>
-        </div>
-      )}
-
-      {/* AI Error Display */}
-      {aiError && (
-        <div
-          style={{
-            marginTop: 12,
-            padding: "12px 14px",
-            background: "var(--red)08",
-            border: "1px solid var(--red)30",
-            borderLeft: "3px solid var(--red)",
-            borderRadius: 4,
-          }}
-        >
-          <div style={{ display: "flex", gap: 8 }}>
-            <span
-              style={{
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: "var(--red)",
-                marginTop: 2,
-              }}
-            >
-              Error:
-            </span>
-            <p
-              style={{
-                fontSize: "0.82rem",
-                lineHeight: 1.5,
-                color: "var(--text)",
-              }}
-            >
-              {aiError}
-            </p>
           </div>
         </div>
       )}

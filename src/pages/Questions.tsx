@@ -267,6 +267,8 @@ export default function Questions() {
     }
   };
 
+
+
   const filteredCategories = getFilteredCategories();
 
   // Show loading spinner while questions are being loaded
@@ -303,7 +305,7 @@ export default function Questions() {
         </p>
       </div>
 
-      {/* Breadcrumb Navigation with Export Button */}
+      {/* Breadcrumb Navigation with Action Buttons */}
       <div
         style={{
           display: "flex",
@@ -368,6 +370,8 @@ export default function Questions() {
         onChange={setSearch}
         placeholder={`Search ${selectedCategory ? selectedCategory.name : "all categories"}...`}
       />
+
+
 
       {/* LEVEL 1: Category Grid */}
       {!selectedCategory && !selectedSection && (
