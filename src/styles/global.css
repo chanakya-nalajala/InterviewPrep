@@ -24,7 +24,7 @@
   --teal: #14b8a6;
   --indigo: #818cf8;
   --radius: 8px;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-mono: "JetBrains Mono", monospace, sans-serif;
   --font-display: "Syne", sans-serif;
 }
 
@@ -40,6 +40,13 @@ html {
   font-size: 15px;
 }
 
+/* Mobile responsive font size */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
 body {
   font-family: var(--font-mono);
   background: var(--bg);
@@ -47,6 +54,7 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 /* Scrollbar */
@@ -292,4 +300,49 @@ label {
   border-radius: 4px;
   font-size: 0.8rem;
   color: var(--amber);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Better mobile spacing */
+  .card {
+    padding: 16px;
+  }
+
+  /* Smaller buttons on mobile */
+  .btn {
+    padding: 7px 14px;
+    font-size: 0.75rem;
+  }
+
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  /* Stack flex items on mobile */
+  .mobile-stack {
+    flex-direction: column;
+  }
+
+  /* Touch-friendly minimum target sizes */
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better input sizing on mobile */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  /* Reduce scrollbar width on mobile */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
 }

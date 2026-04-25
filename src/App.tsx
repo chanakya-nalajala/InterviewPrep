@@ -1,7 +1,7 @@
 // src/App.tsx
 import { HashRouter, Navigate, NavLink, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
-import { lazy, Suspense, ReactNode } from "react";
+import { lazy, Suspense, ReactNode, useState } from "react";
 import Login from "./pages/Login";
 import "./styles/global.css";
 
@@ -17,6 +17,7 @@ interface LayoutProps {
 
 function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div
@@ -30,14 +31,14 @@ function Layout({ children }: LayoutProps) {
           position: "sticky",
           top: 0,
           zIndex: 50,
-          padding: "0 24px",
+          padding: "0 16px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          height: 54,
+          minHeight: 54,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
           <span
             style={{
               fontFamily: "var(--font-display)",
@@ -48,12 +49,24 @@ function Layout({ children }: LayoutProps) {
           >
             Interview<span style={{ color: "var(--amber)" }}>Prep</span>
           </span>
-          <div style={{ display: "flex", gap: 4 }}>
+          {/* Desktop Navigation */}
+          <div
+            style={{
+              display: "flex",
+              gap: 4,
+            }}
+            className="desktop-nav"
+          >
             <NavItem to="/dashboard" label="Dashboard" />
             <NavItem to="/interview" label="Interview Q&A" />
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+
+        {/* Desktop User Menu */}
+        <div
+          style={{ display: "flex", alignItems: "center", gap: 12 }}
+          className="desktop-nav"
+        >
           <img
             src={user?.photoURL || undefined}
             alt="avatar"
@@ -68,19 +81,121 @@ function Layout({ children }: LayoutProps) {
             Logout
           </button>
         </div>
+
+        {/* Mobile Hamburger Menu */}
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          style={{
+            display: "none",
+            background: "transparent",
+            border: "1px solid var(--border)",
+            borderRadius: 6,
+            padding: "8px 12px",
+            cursor: "pointer",
+            color: "var(--text)",
+            fontSize: "1.2rem",
+          }}
+        >
+          {mobileMenuOpen ? "✕" : "☰"}
+        </button>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div
+          className="mobile-menu"
+          style={{
+            position: "sticky",
+            top: 54,
+            zIndex: 40,
+            background: "rgba(10,10,15,0.95)",
+            backdropFilter: "blur(12px)",
+            borderBottom: "1px solid var(--border)",
+            padding: "12px 16px",
+            display: "none",
+            flexDirection: "column",
+            gap: 8,
+          }}
+        >
+          <NavItem
+            to="/dashboard"
+            label="Dashboard"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <NavItem
+            to="/interview"
+            label="Interview Q&A"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              padding: "8px 12px",
+              marginTop: 8,
+              borderTop: "1px solid var(--border)",
+              paddingTop: 12,
+            }}
+          >
+            <img
+              src={user?.photoURL || undefined}
+              alt="avatar"
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                border: "1px solid var(--border)",
+              }}
+            />
+            <span style={{ fontSize: "0.85rem", flex: 1 }}>
+              {user?.displayName}
+            </span>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => {
+                logout();
+                setMobileMenuOpen(false);
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
 
       <main
         style={{
           flex: 1,
           maxWidth: 860,
           margin: "0 auto",
-          padding: "28px 20px",
+          padding: "20px 16px",
           width: "100%",
         }}
       >
         {children}
       </main>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: block !important;
+          }
+          .mobile-menu {
+            display: flex !important;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .mobile-menu {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -88,20 +203,23 @@ function Layout({ children }: LayoutProps) {
 interface NavItemProps {
   to: string;
   label: string;
+  onClick?: () => void;
 }
 
-function NavItem({ to, label }: NavItemProps) {
+function NavItem({ to, label, onClick }: NavItemProps) {
   return (
     <NavLink
       to={to}
+      onClick={onClick}
       style={({ isActive }) => ({
-        padding: "4px 12px",
+        padding: "8px 12px",
         borderRadius: 6,
         fontSize: "0.8rem",
         textDecoration: "none",
         color: isActive ? "var(--amber)" : "var(--muted)",
         background: isActive ? "var(--amber-glow)" : "transparent",
         transition: "all 0.15s",
+        display: "block",
       })}
     >
       {label}

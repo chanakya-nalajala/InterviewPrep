@@ -25,7 +25,7 @@ export function QuestionCard({
   return (
     <div
       style={{
-        padding: "14px 16px",
+        padding: "12px 14px",
         background: "var(--surface2)",
         borderRadius: 6,
         border: `1px solid var(--border)`,
@@ -35,7 +35,7 @@ export function QuestionCard({
       {/* Question */}
       <p
         style={{
-          fontSize: "0.88rem",
+          fontSize: "0.86rem",
           lineHeight: 1.6,
           marginBottom: 10,
           fontWeight: 500,
@@ -48,8 +48,8 @@ export function QuestionCard({
       <button
         onClick={onToggleHint}
         style={{
-          fontSize: "0.75rem",
-          padding: "4px 12px",
+          fontSize: "0.72rem",
+          padding: "6px 14px",
           background: showHint ? `${color}20` : "var(--surface)",
           color: showHint ? color : "var(--muted)",
           border: `1px solid ${showHint ? `${color}40` : "var(--border)"}`,
@@ -59,6 +59,7 @@ export function QuestionCard({
           alignItems: "center",
           gap: 6,
           transition: "all 0.15s",
+          minHeight: "36px",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = `${color}60`;
@@ -122,7 +123,7 @@ export function QuestionCard({
         style={{
           marginTop: 12,
           display: "flex",
-          gap: 8,
+          gap: 6,
           flexWrap: "wrap",
           alignItems: "center",
         }}
@@ -150,13 +151,15 @@ export function QuestionCard({
         {(status === "done" || status === "revisit") && (
           <div
             style={{
-              marginLeft: "auto",
+              width: "100%",
+              marginTop: 8,
               display: "flex",
-              gap: 4,
+              gap: 6,
               alignItems: "center",
+              flexWrap: "wrap",
             }}
           >
-            <span style={{ fontSize: "0.7rem", color: "var(--muted)" }}>
+            <span style={{ fontSize: "0.68rem", color: "var(--muted)" }}>
               Confidence:
             </span>
             {[1, 2, 3, 4, 5].map((level) => (
@@ -164,9 +167,9 @@ export function QuestionCard({
                 key={level}
                 onClick={() => onUpdateProgress(status, level)}
                 style={{
-                  width: 24,
-                  height: 24,
-                  fontSize: "0.7rem",
+                  minWidth: 32,
+                  minHeight: 32,
+                  fontSize: "0.72rem",
                   border:
                     confidence === level
                       ? `2px solid ${color}`
@@ -177,6 +180,7 @@ export function QuestionCard({
                   borderRadius: 4,
                   cursor: "pointer",
                   fontWeight: confidence === level ? 700 : 400,
+                  padding: 4,
                 }}
               >
                 {level}

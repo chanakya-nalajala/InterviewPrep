@@ -272,11 +272,11 @@ export default function InterviewQuestions() {
   return (
     <div className="animate-in" style={{ padding: "0 0 40px" }}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 20 }}>
         <h1
           style={{
             fontFamily: "var(--font-display)",
-            fontSize: "1.8rem",
+            fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
             fontWeight: 800,
             letterSpacing: "-0.02em",
             marginBottom: 8,
@@ -284,7 +284,7 @@ export default function InterviewQuestions() {
         >
           📋 Interview Q&A
         </h1>
-        <p className="text-muted" style={{ fontSize: "0.85rem" }}>
+        <p className="text-muted" style={{ fontSize: "0.82rem", lineHeight: 1.5 }}>
           {!selectedCategory &&
             !selectedSection &&
             `${categories.length} categories • 818 questions with expert hints`}
@@ -299,11 +299,11 @@ export default function InterviewQuestions() {
       {(selectedCategory || selectedSection) && (
         <div
           style={{
-            marginBottom: 20,
+            marginBottom: 16,
             display: "flex",
             alignItems: "center",
             gap: 8,
-            fontSize: "0.85rem",
+            fontSize: "0.82rem",
             flexWrap: "wrap",
           }}
         >
@@ -311,7 +311,7 @@ export default function InterviewQuestions() {
             onClick={goBack}
             className="btn"
             style={{
-              padding: "6px 14px",
+              padding: "8px 16px",
               background: "var(--amber-glow)",
               color: "var(--amber)",
               borderRadius: 6,
@@ -319,7 +319,8 @@ export default function InterviewQuestions() {
               display: "flex",
               alignItems: "center",
               gap: 6,
-              fontSize: "0.85rem",
+              fontSize: "0.8rem",
+              minHeight: "36px",
             }}
           >
             ← Back
@@ -334,8 +335,9 @@ export default function InterviewQuestions() {
                   border: "none",
                   color: selectedCategory.color,
                   cursor: selectedSection ? "pointer" : "default",
-                  padding: 0,
+                  padding: "4px 0",
                   fontWeight: 600,
+                  fontSize: "0.85rem",
                 }}
               >
                 {selectedCategory.icon} {selectedCategory.name}
@@ -345,14 +347,16 @@ export default function InterviewQuestions() {
           {selectedSection && (
             <>
               <span className="text-muted">/</span>
-              <span style={{ fontWeight: 600 }}>{selectedSection.name}</span>
+              <span style={{ fontWeight: 600, fontSize: "0.82rem" }}>
+                {selectedSection.name}
+              </span>
             </>
           )}
         </div>
       )}
 
       {/* Search Bar */}
-      <div className="search-bar" style={{ marginBottom: 24 }}>
+      <div className="search-bar" style={{ marginBottom: 20 }}>
         <input
           type="text"
           placeholder={`Search ${selectedCategory ? selectedCategory.name : "all categories"}...`}
@@ -360,8 +364,8 @@ export default function InterviewQuestions() {
           onChange={(e) => setSearch(e.target.value)}
           style={{
             width: "100%",
-            padding: "14px 16px 14px 40px",
-            fontSize: "0.9rem",
+            padding: "12px 14px 12px 38px",
+            fontSize: "0.88rem",
             border: "1px solid var(--border)",
             borderRadius: 8,
             background: "var(--surface)",
@@ -369,7 +373,8 @@ export default function InterviewQuestions() {
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E\")",
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "12px center",
+            backgroundPosition: "10px center",
+            backgroundSize: "18px",
           }}
         />
       </div>
@@ -379,8 +384,8 @@ export default function InterviewQuestions() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 16,
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 14,
           }}
         >
           {filteredCategories.map((category) => {
@@ -410,14 +415,14 @@ export default function InterviewQuestions() {
                   e.currentTarget.style.boxShadow = "var(--shadow)";
                 }}
               >
-                <div style={{ fontSize: "2.5rem", marginBottom: 12 }}>
+                <div style={{ fontSize: "2.2rem", marginBottom: 10 }}>
                   {category.icon}
                 </div>
                 <h3
                   style={{
-                    fontSize: "1.1rem",
+                    fontSize: "1rem",
                     fontWeight: 700,
-                    marginBottom: 8,
+                    marginBottom: 6,
                     color: category.color,
                   }}
                 >
@@ -425,9 +430,9 @@ export default function InterviewQuestions() {
                 </h3>
                 <p
                   style={{
-                    fontSize: "0.8rem",
+                    fontSize: "0.78rem",
                     color: "var(--muted)",
-                    marginBottom: 16,
+                    marginBottom: 14,
                     lineHeight: 1.5,
                   }}
                 >
@@ -435,7 +440,7 @@ export default function InterviewQuestions() {
                 </p>
                 <div
                   style={{
-                    fontSize: "0.75rem",
+                    fontSize: "0.72rem",
                     color: "var(--muted)",
                     marginBottom: 8,
                   }}
@@ -459,7 +464,7 @@ export default function InterviewQuestions() {
 
       {/* LEVEL 2: Sections List */}
       {selectedCategory && !selectedSection && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {getFilteredSections(selectedCategory).map((section) => {
             const totalQuestions =
               section.interviewQuestions.length +
@@ -479,10 +484,12 @@ export default function InterviewQuestions() {
                 style={{
                   cursor: "pointer",
                   transition: "all 0.2s",
-                  padding: "20px",
+                  padding: "16px",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  gap: "12px",
+                  flexWrap: "wrap",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = `${selectedCategory.color}40`;

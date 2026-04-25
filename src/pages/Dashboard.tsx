@@ -278,7 +278,7 @@ export default function Dashboard() {
   return (
     <div className="animate-in" style={{ padding: "0 0 40px" }}>
       {/* Hero */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 24 }}>
         <p
           className="text-muted"
           style={{
@@ -293,9 +293,10 @@ export default function Dashboard() {
         <h1
           style={{
             fontFamily: "var(--font-display)",
-            fontSize: "1.8rem",
+            fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
             fontWeight: 800,
             letterSpacing: "-0.02em",
+            wordBreak: "break-word",
           }}
         >
           {user?.displayName?.split(" ")[0]}'s Prep Board
@@ -306,9 +307,9 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-          gap: 12,
-          marginBottom: 28,
+          gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
+          gap: 10,
+          marginBottom: 24,
         }}
       >
         <StatCard label="Total" value={stats.total} color="var(--text)" />
@@ -453,7 +454,12 @@ export default function Dashboard() {
         <button
           className="btn btn-primary"
           onClick={() => navigate("/interview")}
-          style={{ width: "100%", justifyContent: "center", padding: "14px" }}
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            padding: "12px 14px",
+            minHeight: "48px",
+          }}
         >
           📋 Continue Learning
         </button>
@@ -461,12 +467,13 @@ export default function Dashboard() {
           <div
             style={{
               marginTop: 16,
-              padding: "14px 16px",
+              padding: "12px 14px",
               background: "var(--amber-glow)",
               border: "1px solid var(--amber-dim)",
               borderRadius: "var(--radius)",
               fontSize: "0.8rem",
               color: "var(--amber)",
+              lineHeight: 1.5,
             }}
           >
             ⚡ You have <strong>{stats.revisit}</strong> question
@@ -486,10 +493,10 @@ interface StatCardProps {
 
 function StatCard({ label, value, color }: StatCardProps) {
   return (
-    <div className="card" style={{ textAlign: "center", padding: "16px 12px" }}>
+    <div className="card" style={{ textAlign: "center", padding: "14px 10px" }}>
       <div
         style={{
-          fontSize: "1.6rem",
+          fontSize: "clamp(1.3rem, 4vw, 1.6rem)",
           fontWeight: 700,
           color,
           fontFamily: "var(--font-display)",
@@ -499,7 +506,7 @@ function StatCard({ label, value, color }: StatCardProps) {
       </div>
       <div
         style={{
-          fontSize: "0.7rem",
+          fontSize: "0.68rem",
           color: "var(--muted)",
           marginTop: 4,
           textTransform: "uppercase",

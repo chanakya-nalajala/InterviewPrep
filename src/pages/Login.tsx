@@ -34,7 +34,8 @@ export default function Login() {
           textAlign: "center",
           zIndex: 1,
           maxWidth: 400,
-          padding: "0 24px",
+          padding: "0 20px",
+          width: "100%",
         }}
       >
         {/* Logo */}
@@ -43,21 +44,21 @@ export default function Login() {
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 64,
-            height: 64,
-            borderRadius: 16,
+            width: 56,
+            height: 56,
+            borderRadius: 14,
             background: "var(--amber-glow)",
             border: "1px solid var(--amber-dim)",
-            marginBottom: 28,
+            marginBottom: 24,
           }}
         >
-          <span style={{ fontSize: 28 }}>⚡</span>
+          <span style={{ fontSize: 26 }}>⚡</span>
         </div>
 
         <h1
           style={{
             fontFamily: "var(--font-display)",
-            fontSize: "2rem",
+            fontSize: "clamp(1.6rem, 6vw, 2rem)",
             fontWeight: 800,
             color: "var(--text)",
             letterSpacing: "-0.03em",
@@ -69,7 +70,7 @@ export default function Login() {
 
         <p
           className="text-muted"
-          style={{ fontSize: "0.85rem", marginBottom: 40, lineHeight: 1.7 }}
+          style={{ fontSize: "0.82rem", marginBottom: 32, lineHeight: 1.7 }}
         >
           738+ curated interview questions with expert hints.
           <br />
@@ -81,12 +82,13 @@ export default function Login() {
             background: "var(--surface)",
             border: "1px solid var(--border)",
             borderRadius: 12,
-            padding: 28,
+            padding: "24px 20px",
+            width: "100%",
           }}
         >
           <p
             style={{
-              fontSize: "0.75rem",
+              fontSize: "0.72rem",
               color: "var(--muted)",
               marginBottom: 16,
               letterSpacing: "0.06em",
@@ -99,8 +101,9 @@ export default function Login() {
             className="btn btn-primary w-full"
             style={{
               justifyContent: "center",
-              padding: "12px 20px",
-              fontSize: "0.85rem",
+              padding: "12px 18px",
+              fontSize: "0.82rem",
+              minHeight: "48px",
             }}
             onClick={login}
           >
@@ -109,7 +112,7 @@ export default function Login() {
           </button>
           <p
             className="text-muted"
-            style={{ fontSize: "0.7rem", marginTop: 16 }}
+            style={{ fontSize: "0.68rem", marginTop: 14, lineHeight: 1.4 }}
           >
             Secure authentication via Firebase
           </p>
