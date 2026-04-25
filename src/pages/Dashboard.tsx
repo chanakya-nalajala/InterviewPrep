@@ -71,6 +71,16 @@ export default function Dashboard() {
       };
     }
 
+    // Use stats from Firestore if available (should be synced by recalculateStats)
+    if (progress.stats) {
+      console.log("📊 Using stats from Firestore:", progress.stats);
+      return progress.stats;
+    }
+
+    // Fallback: calculate stats client-side if not in Firestore yet
+    console.log("⚠️ Stats not in Firestore, calculating client-side...");
+
+
     const questions = progress.questions;
     let done = 0;
     let revisit = 0;
