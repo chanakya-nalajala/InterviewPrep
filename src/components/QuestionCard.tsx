@@ -38,6 +38,14 @@ export function QuestionCard({
   const handleToggleAnswer = () => {
     setShowAnswer(!showAnswer);
   };
+
+  // Generate Google search link with question and hint
+  const generateGoogleSearchLink = () => {
+    const searchQuery = `${question.question} ${question.hint} code example`;
+    const encodedQuery = encodeURIComponent(searchQuery);
+    return `https://www.google.com/search?q=${encodedQuery}`;
+  };
+
   return (
     <div
       style={{
@@ -135,6 +143,41 @@ export function QuestionCard({
             {showAnswer ? "Hide Answer" : "Show Answer"}
           </button>
         )}
+
+        {/* Google Search Button */}
+        <a
+          href={generateGoogleSearchLink()}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: "0.72rem",
+            padding: "6px 14px",
+            background: "var(--surface)",
+            color: "var(--muted)",
+            border: "1px solid var(--border)",
+            borderRadius: 4,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            transition: "all 0.15s",
+            minHeight: "36px",
+            textDecoration: "none",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "var(--blue)60";
+            e.currentTarget.style.background = "var(--blue)15";
+            e.currentTarget.style.color = "var(--blue)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--border)";
+            e.currentTarget.style.background = "var(--surface)";
+            e.currentTarget.style.color = "var(--muted)";
+          }}
+        >
+          <span style={{ fontSize: "0.9rem" }}>🔍</span>
+          Search Google
+        </a>
       </div>
 
       {/* Hint Display */}
