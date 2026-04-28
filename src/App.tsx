@@ -13,7 +13,7 @@ interface LayoutProps {
 
 function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showUserName, setShowUserName] = useState(false);
 
   return (
     <div
@@ -27,21 +27,23 @@ function Layout({ children }: LayoutProps) {
           position: "sticky",
           top: 0,
           zIndex: 50,
-          padding: "0 16px",
+          padding: "0 12px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           minHeight: 54,
+          gap: 8,
         }}
       >
+        {/* Logo */}
         <div
-          style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}
+          style={{ display: "flex", alignItems: "center", gap: 8 }}
         >
           <span
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 800,
-              fontSize: "1rem",
+              fontSize: "clamp(0.9rem, 3vw, 1rem)",
               color: "var(--text)",
             }}
           >
@@ -49,95 +51,65 @@ function Layout({ children }: LayoutProps) {
           </span>
         </div>
 
-        {/* Desktop User Menu */}
+        {/* User Menu - Always Visible */}
         <div
-          style={{ display: "flex", alignItems: "center", gap: 12 }}
-          className="desktop-nav"
-        >
-          <img
-            src={user?.photoURL || undefined}
-            alt="avatar"
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              border: "1px solid var(--border)",
-            }}
-          />
-          <button className="btn btn-ghost btn-sm" onClick={logout}>
-            Logout
-          </button>
-        </div>
-
-        {/* Mobile Hamburger Menu */}
-        <button
-          className="mobile-menu-btn"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          style={{
-            display: "none",
-            background: "transparent",
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-            padding: "8px 12px",
-            cursor: "pointer",
-            color: "var(--text)",
-            fontSize: "1.2rem",
-          }}
-        >
-          {mobileMenuOpen ? "✕" : "☰"}
-        </button>
-      </nav>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div
-          className="mobile-menu"
-          style={{
-            position: "sticky",
-            top: 54,
-            zIndex: 40,
-            background: "rgba(10,10,15,0.95)",
-            backdropFilter: "blur(12px)",
-            borderBottom: "1px solid var(--border)",
-            padding: "12px 16px",
-            display: "none",
-            flexDirection: "column",
-            gap: 8,
-          }}
+          style={{ display: "flex", alignItems: "center", gap: 8 }}
         >
           <div
             style={{
+              position: "relative",
               display: "flex",
               alignItems: "center",
-              gap: 12,
-              padding: "8px 12px",
+              gap: 6,
             }}
+            title={user?.displayName || "User"}
           >
             <img
               src={user?.photoURL || undefined}
-              alt="avatar"
+              alt={user?.displayName || "User"}
+              onClick={() => setShowUserName(!showUserName)}
               style={{
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 borderRadius: "50%",
-                border: "1px solid var(--border)",
+                border: `2px solid ${showUserName ? "var(--amber)" : "var(--border)"}`,
+                cursor: "pointer",
+                transition: "all 0.2s",
               }}
             />
-            <span style={{ fontSize: "0.85rem", flex: 1 }}>
-              {user?.displayName}
-            </span>
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() => {
-                logout();
-                setMobileMenuOpen(false);
-              }}
-            >
-              Logout
-            </button>
+            {showUserName && (
+              <span
+                style={{
+                  fontSize: "clamp(0.7rem, 2vw, 0.8rem)",
+                  color: "var(--text)",
+                  fontWeight: 500,
+                  maxWidth: "120px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  animation: "revealName 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  transformOrigin: "left center",
+                }}
+                className="user-name"
+              >
+                {user?.displayName?.split(" ")[0] || "User"}
+              </span>
+            )}
           </div>
+          <button
+            className="btn btn-ghost btn-sm logout-btn"
+            onClick={logout}
+            style={{
+              fontSize: "clamp(0.65rem, 2vw, 0.72rem)",
+              padding: "5px 8px",
+              minHeight: "auto",
+              height: "auto",
+            }}
+          >
+            Logout
+          </button>
         </div>
-      )}
+      </nav>
 
       <main
         style={{
@@ -152,21 +124,41 @@ function Layout({ children }: LayoutProps) {
       </main>
 
       <style>{`
-        @media (max-width: 768px) {
-          .desktop-nav {
-            display: none !important;
+        @keyframes revealName {
+          0% {
+            opacity: 0;
+            transform: translateX(-20px) scale(0.8);
+            filter: blur(4px);
           }
-          .mobile-menu-btn {
-            display: block !important;
+          50% {
+            opacity: 0.8;
+            transform: translateX(2px) scale(1.05);
+            filter: blur(1px);
           }
-          .mobile-menu {
-            display: flex !important;
+          100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            filter: blur(0);
           }
         }
 
-        @media (min-width: 769px) {
-          .mobile-menu {
-            display: none !important;
+        /* Mobile logout button styling */
+        @media (max-width: 768px) {
+          .logout-btn {
+            padding: 4px 8px !important;
+            font-size: 0.65rem !important;
+            font-weight: 500 !important;
+            min-height: 28px !important;
+            height: 28px !important;
+            line-height: 1.2 !important;
+          }
+        }
+
+        /* Very small screens - even more compact */
+        @media (max-width: 360px) {
+          .logout-btn {
+            padding: 4px 6px !important;
+            font-size: 0.6rem !important;
           }
         }
       `}</style>
