@@ -341,11 +341,11 @@ export default function Dashboard() {
   return (
     <div className="animate-in" style={{ padding: "0 0 40px" }}>
         {/* Hero */}
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 16 }}>
           <p
             className="text-muted"
             style={{
-              fontSize: "1rem",
+              fontSize: "clamp(0.85rem, 2.5vw, 1rem)",
               letterSpacing: "0.01em",
               marginBottom: 6,
               fontWeight: 700,
@@ -356,7 +356,7 @@ export default function Dashboard() {
           <h1
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(1.4rem, 5vw, 1.8rem)",
+              fontSize: "clamp(1.3rem, 5vw, 1.8rem)",
               fontWeight: 700,
               letterSpacing: "-0.02em",
               wordBreak: "break-word",
@@ -366,111 +366,92 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* Overview Stats */}
+        {/* Overview Stats - Sticky */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
-            gap: 10,
-            marginBottom: 24,
+            position: "sticky",
+            top: 54, // Height of the navbar (minHeight: 54 from App.tsx)
+            zIndex: 40, // Below navbar (zIndex: 50) but above content
+            backgroundColor: "var(--bg)",
+            paddingTop: 8,
+            paddingBottom: 12,
+            marginBottom: 0,
+            marginLeft: -16,
+            marginRight: -16,
+            paddingLeft: 16,
+            paddingRight: 16,
+            backdropFilter: "blur(10px)",
           }}
         >
-          <StatCard
-            label="Total"
-            value={stats.total}
-            color="var(--text)"
-            index={0}
-          />
-          <StatCard
-            label="Done"
-            value={stats.done}
-            color="var(--green)"
-            index={1}
-          />
-          <StatCard
-            label="Revisit"
-            value={stats.revisit}
-            color="var(--amber)"
-            index={2}
-          />
-          <StatCard
-            label="Pending"
-            value={stats.pending}
-            color="var(--muted)"
-            index={3}
-          />
-          <StatCard
-            label="Avg Confidence"
-            value={
-              stats.avgConfidence > 0
-                ? `${stats.avgConfidence.toFixed(1)}/5`
-                : "N/A"
-            }
-            color="var(--blue)"
-            index={4}
-          />
-        </div>
-
-        {/* Overall Progress */}
-        <div className="card" style={{ marginBottom: 24 }}>
           <div
+            className="stats-grid"
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 12,
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 6,
             }}
           >
-            <span
-              style={{
-                fontSize: "0.78rem",
-                color: "var(--muted)",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-              }}
-            >
-              Overall Completion
-            </span>
-            <span
-              style={{
-                fontWeight: 700,
-                color: completionPct === 100 ? "var(--green)" : "var(--amber)",
-                fontSize: "1.1rem",
-              }}
-            >
-              {completionPct}%
-            </span>
-          </div>
-          <div className="progress-track">
-            <div
-              className="progress-fill"
-              style={{
-                width: `${completionPct}%`,
-                background:
-                  completionPct === 100 ? "var(--green)" : "var(--amber)",
-              }}
+            <StatCard
+              label="Completion"
+              value={`${completionPct}%`}
+              color={completionPct === 100 ? "var(--green)" : "var(--amber)"}
+              index={0}
+            />
+            <StatCard
+              label="Total"
+              value={stats.total}
+              color="var(--text)"
+              index={1}
+            />
+            <StatCard
+              label="Done"
+              value={stats.done}
+              color="var(--green)"
+              index={2}
+            />
+            <StatCard
+              label="Revisit"
+              value={stats.revisit}
+              color="var(--amber)"
+              index={3}
+            />
+            <StatCard
+              label="Pending"
+              value={stats.pending}
+              color="var(--muted)"
+              index={4}
+            />
+            <StatCard
+              label="Avg Confidence"
+              value={
+                stats.avgConfidence > 0
+                  ? `${stats.avgConfidence.toFixed(1)}/5`
+                  : "N/A"
+              }
+              color="var(--blue)"
+              index={5}
             />
           </div>
         </div>
 
         {/* Questions Section */}
-        <div style={{ marginTop: 32 }}>
+        <div style={{ marginTop: 20, paddingTop: 16 }}>
           {/* Questions Header */}
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 16 }}>
             <h2
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "1.4rem",
+                fontSize: "clamp(1.2rem, 4vw, 1.4rem)",
                 fontWeight: 700,
                 letterSpacing: "-0.02em",
-                marginBottom: 8,
+                marginBottom: 6,
               }}
             >
               📋 Interview Q&A
             </h2>
             <p
               className="text-muted"
-              style={{ fontSize: "0.82rem", lineHeight: 1.5 }}
+              style={{ fontSize: "clamp(0.75rem, 2vw, 0.82rem)", lineHeight: 1.5 }}
             >
               {!selectedCategory &&
                 !selectedSection &&

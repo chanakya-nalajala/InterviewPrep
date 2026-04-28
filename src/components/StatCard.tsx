@@ -39,7 +39,7 @@ export function StatCard({ label, value, color, index = 0 }: StatCardProps) {
       onMouseLeave={() => setIsHovered(false)}
       style={{
         textAlign: "center",
-        padding: "14px 10px",
+        padding: "10px 6px",
         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         transform: isHovered ? "translateY(-4px) scale(1.05)" : "scale(1)",
         boxShadow: isHovered
@@ -65,7 +65,7 @@ export function StatCard({ label, value, color, index = 0 }: StatCardProps) {
 
       <div
         style={{
-          fontSize: "clamp(1.3rem, 4vw, 1.6rem)",
+          fontSize: "clamp(0.95rem, 3.5vw, 1.4rem)",
           fontWeight: 700,
           color,
           fontFamily: "var(--font-display)",
@@ -78,11 +78,11 @@ export function StatCard({ label, value, color, index = 0 }: StatCardProps) {
       </div>
       <div
         style={{
-          fontSize: "0.68rem",
+          fontSize: "clamp(0.55rem, 1.8vw, 0.65rem)",
           color: "var(--muted)",
-          marginTop: 4,
+          marginTop: 2,
           textTransform: "uppercase",
-          letterSpacing: "0.06em",
+          letterSpacing: "0.04em",
           position: "relative",
         }}
       >

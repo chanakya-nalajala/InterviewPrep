@@ -39,6 +39,8 @@
 html {
   font-size: 15px;
   scroll-behavior: smooth;
+  /* Optimize scrolling performance on mobile */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Mobile responsive font size */
@@ -657,5 +659,109 @@ label {
   /* Reduce scrollbar width on mobile */
   ::-webkit-scrollbar {
     width: 4px;
+  }
+
+  /* Mobile stat cards - more compact */
+  .stats-grid .card {
+    padding: 8px 3px !important;
+  }
+
+  /* Reduce animation intensity on mobile */
+  .animate-in {
+    animation: fadeIn 0.3s ease-in-out forwards;
+  }
+
+  .animate-scale {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  /* Better mobile button sizing */
+  button a {
+    font-size: 0.7rem !important;
+    padding: 6px 10px !important;
+  }
+
+  /* Smaller action buttons on mobile */
+  .card button,
+  .card a {
+    font-size: 0.68rem !important;
+    padding: 5px 10px !important;
+    min-height: 32px !important;
+  }
+
+  /* Better markdown code blocks on mobile */
+  .markdown-content pre {
+    font-size: 0.7rem;
+    padding: 8px;
+    overflow-x: auto;
+  }
+
+  .markdown-content code {
+    font-size: 0.7rem;
+  }
+
+  /* Responsive text wrapping on mobile */
+  h1, h2, h3 {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Better spacing on mobile */
+  main {
+    padding: 16px 12px !important;
+  }
+
+  /* Stats grid - 3 columns on mobile */
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Improve category and section cards on mobile */
+  .card:hover {
+    transform: none; /* Disable hover transforms on mobile */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Better breadcrumb on mobile */
+  .breadcrumb {
+    font-size: 0.7rem !important;
+  }
+
+  /* Reduce top margin on questions section for mobile */
+  .animate-in {
+    padding: 0 0 20px !important;
+  }
+
+  /* Better hint and answer sections on mobile */
+  .markdown-content {
+    font-size: 0.75rem !important;
+  }
+
+  /* Compact question cards on mobile */
+  .card > p {
+    font-size: 0.8rem !important;
+  }
+
+  /* Better status buttons layout on mobile */
+  button {
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Very small screens - extra compact */
+@media (max-width: 360px) {
+  .stats-grid .card {
+    padding: 6px 2px !important;
+  }
+
+  html {
+    font-size: 13px;
+  }
+}
+
+/* Tablet and larger screens - 6 columns */
+@media (min-width: 769px) {
+  .stats-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
   }
 }

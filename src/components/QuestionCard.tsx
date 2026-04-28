@@ -69,7 +69,7 @@ export function QuestionCard({
       </p>
 
       {/* Action Buttons */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         {/* Hint Toggle Button */}
         <button
           onClick={onToggleHint}
