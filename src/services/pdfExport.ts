@@ -9,11 +9,11 @@ interface ExportOptions {
   categoryName: string;
   categoryColor: string;
   includeHints: boolean;
-  includeAIAnswers: boolean;
+  includeAnswers: boolean;
 }
 
 /**
- * Export a section's questions to PDF with optional AI answers
+ * Export a section's questions to PDF with optional answers
  */
 export async function exportSectionToPDF(
   section: TopicSection,
@@ -135,11 +135,11 @@ async function addQuestionsSection(
       yPosition += hintText.length * 5;
     }
 
-    // AI Answer (if enabled and available)
-    if (options.includeAIAnswers) {
+    // Answer (if enabled and available)
+    if (options.includeAnswers) {
       try {
-        const aiAnswer = getAnswerByQuestionId(question.id);
-        if (aiAnswer) {
+        const answer = getAnswerByQuestionId(question.id);
+        if (answer) {
           yPosition += 3;
           doc.setFontSize(10);
           doc.setTextColor(80, 80, 180);
@@ -151,7 +151,7 @@ async function addQuestionsSection(
           doc.setTextColor(40, 40, 40);
 
           // Clean markdown for PDF (basic conversion)
-          const cleanAnswer = aiAnswer
+          const cleanAnswer = answer
             .replace(/#{1,3}\s/g, "") // Remove markdown headers
             .replace(/\*\*(.*?)\*\*/g, "$1") // Remove bold
             .replace(/\*(.*?)\*/g, "$1") // Remove italic
@@ -165,7 +165,7 @@ async function addQuestionsSection(
           yPosition += answerLines.length * 5;
         }
       } catch (error) {
-        console.warn("Could not fetch AI answer for", question.id);
+        console.warn("Could not fetch answer for", question.id);
       }
     }
 

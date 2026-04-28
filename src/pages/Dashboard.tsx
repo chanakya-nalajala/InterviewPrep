@@ -182,8 +182,8 @@ export default function Dashboard() {
         sectionName: selectedSection.name,
         categoryName: selectedCategory.name,
         categoryColor: selectedCategory.color,
-        includeHints: false,
-        includeAIAnswers: true,
+        includeHints: true,
+        includeAnswers: true,
       });
     } catch (error) {
       console.error("Error exporting PDF:", error);
