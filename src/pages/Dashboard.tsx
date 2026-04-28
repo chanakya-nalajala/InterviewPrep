@@ -394,13 +394,13 @@ export default function Dashboard() {
             <StatCard
               label="Completion"
               value={`${completionPct}%`}
-              color={completionPct === 100 ? "var(--green)" : "var(--amber)"}
+              color={completionPct === 100 ? "var(--green)" : "var(--purple)"}
               index={0}
             />
             <StatCard
               label="Total"
               value={stats.total}
-              color="var(--text)"
+              color="var(--blue)"
               index={1}
             />
             <StatCard
@@ -418,7 +418,7 @@ export default function Dashboard() {
             <StatCard
               label="Pending"
               value={stats.pending}
-              color="var(--muted)"
+              color="var(--red)"
               index={4}
             />
             <StatCard
@@ -428,7 +428,7 @@ export default function Dashboard() {
                   ? `${stats.avgConfidence.toFixed(1)}/5`
                   : "N/A"
               }
-              color="var(--blue)"
+              color="var(--purple)"
               index={5}
             />
           </div>

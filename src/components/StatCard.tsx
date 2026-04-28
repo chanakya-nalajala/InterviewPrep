@@ -32,23 +32,62 @@ export function StatCard({ label, value, color, index = 0 }: StatCardProps) {
 
   const animationDelay = `${index * 0.08}s`;
 
+  // Helper function to convert hex color to rgba
+  const hexToRgba = (hex: string, alpha: number): string => {
+    // Remove # if present
+    hex = hex.replace('#', '');
+
+    // Parse RGB values
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
+  // Map CSS variables to their actual hex values
+  const getColorValue = (cssColor: string): string => {
+    const colorMap: Record<string, string> = {
+      'var(--amber)': '#f59e0b',
+      'var(--green)': '#10b981',
+      'var(--blue)': '#60a5fa',
+      'var(--purple)': '#a78bfa',
+      'var(--red)': '#ef4444',
+      'var(--muted)': '#6b6b80',
+      'var(--text)': '#e8e8f0',
+    };
+    return colorMap[cssColor] || cssColor;
+  };
+
+  // Helper function to create color with opacity
+  const getColorWithOpacity = (cssColor: string, opacity: number): string => {
+    const hexColor = getColorValue(cssColor);
+    return hexToRgba(hexColor, opacity);
+  };
+
   return (
     <div
       className="card animate-scale"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={(e) => {
+        setIsHovered(true);
+        e.currentTarget.style.transform = "translateY(-2px)";
+        e.currentTarget.style.boxShadow = `0 8px 24px ${getColorWithOpacity(color, 0.2)}`;
+        e.currentTarget.style.borderColor = getColorWithOpacity(color, 0.4);
+      }}
+      onMouseLeave={(e) => {
+        setIsHovered(false);
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
+        e.currentTarget.style.borderColor = getColorWithOpacity(color, 0.2);
+      }}
       style={{
         textAlign: "center",
         padding: "10px 6px",
         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-        transform: isHovered ? "translateY(-4px) scale(1.05)" : "scale(1)",
-        boxShadow: isHovered
-          ? `0 8px 20px rgba(0,0,0,0.15), 0 0 0 2px ${color}20`
-          : "none",
-        borderColor: isHovered ? `${color}40` : "var(--border)",
         animationDelay,
         position: "relative",
         overflow: "hidden",
+        borderColor: getColorWithOpacity(color, 0.2),
       }}
     >
       {/* Subtle background gradient on hover */}
