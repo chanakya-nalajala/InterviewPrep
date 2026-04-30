@@ -1,11 +1,24 @@
 import { useAuth } from "../hooks/useAuth";
 import { Toast } from "../components/Toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GoogleIcon } from "../components/GoogleIcon.tsx";
+import { getTotalQuestionCount, loadAllCategories } from "../data/dataLoader";
 
 export default function Login() {
   const { login } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [totalQuestions, setTotalQuestions] = useState<number>(0);
+  const [categoryNames, setCategoryNames] = useState<string>("");
+
+  // Load dynamic data on mount
+  useEffect(() => {
+    const count = getTotalQuestionCount();
+    setTotalQuestions(count);
+
+    const categories = loadAllCategories();
+    const names = categories.map((cat) => cat.name).join(" · ");
+    setCategoryNames(names);
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -89,7 +102,8 @@ export default function Login() {
               background: "var(--amber-glow)",
               border: "1px solid var(--amber-dim)",
               marginBottom: 24,
-              animation: "scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1), glow 2s ease-in-out infinite",
+              animation:
+                "scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1), glow 2s ease-in-out infinite",
             }}
           >
             <span
@@ -119,9 +133,11 @@ export default function Login() {
             className="text-muted"
             style={{ fontSize: "0.82rem", marginBottom: 32, lineHeight: 1.7 }}
           >
-            800+ curated interview questions with expert hints.
+            {totalQuestions > 0
+              ? `${totalQuestions} curated interview questions with expert hints.`
+              : "Loading..."}
             <br />
-            Java · Spring · Microservices · Angular
+            {categoryNames || "Loading categories..."}
           </p>
 
           <div

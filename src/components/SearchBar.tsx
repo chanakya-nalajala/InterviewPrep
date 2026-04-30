@@ -16,7 +16,10 @@ export function SearchBar({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <div className="search-bar animate-slide-right" style={{ marginBottom: 20 }}>
+    <div
+      className="search-bar animate-slide-right"
+      style={{ marginBottom: 20 }}
+    >
       <div style={{ position: "relative" }}>
         <input
           type="text"

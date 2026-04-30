@@ -212,7 +212,11 @@ export default function Dashboard() {
       return {
         ...progress.stats,
         total: totalQuestions,
-        pending: totalQuestions - progress.stats.done - progress.stats.revisit - progress.stats.skipped,
+        pending:
+          totalQuestions -
+          progress.stats.done -
+          progress.stats.revisit -
+          progress.stats.skipped,
       };
     }
 

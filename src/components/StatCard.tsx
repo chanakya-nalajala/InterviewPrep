@@ -35,7 +35,7 @@ export function StatCard({ label, value, color, index = 0 }: StatCardProps) {
   // Helper function to convert hex color to rgba
   const hexToRgba = (hex: string, alpha: number): string => {
     // Remove # if present
-    hex = hex.replace('#', '');
+    hex = hex.replace("#", "");
 
     // Parse RGB values
     const r = parseInt(hex.substring(0, 2), 16);
@@ -48,13 +48,13 @@ export function StatCard({ label, value, color, index = 0 }: StatCardProps) {
   // Map CSS variables to their actual hex values
   const getColorValue = (cssColor: string): string => {
     const colorMap: Record<string, string> = {
-      'var(--amber)': '#f59e0b',
-      'var(--green)': '#10b981',
-      'var(--blue)': '#60a5fa',
-      'var(--purple)': '#a78bfa',
-      'var(--red)': '#ef4444',
-      'var(--muted)': '#6b6b80',
-      'var(--text)': '#e8e8f0',
+      "var(--amber)": "#f59e0b",
+      "var(--green)": "#10b981",
+      "var(--blue)": "#60a5fa",
+      "var(--purple)": "#a78bfa",
+      "var(--red)": "#ef4444",
+      "var(--muted)": "#6b6b80",
+      "var(--text)": "#e8e8f0",
     };
     return colorMap[cssColor] || cssColor;
   };

@@ -95,7 +95,7 @@ body {
 }
 
 .btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -104,7 +104,9 @@ body {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition:
+    width 0.6s,
+    height 0.6s;
 }
 
 .btn:active::before {
@@ -363,7 +365,8 @@ label {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -372,7 +375,8 @@ label {
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -381,7 +385,8 @@ label {
 }
 
 @keyframes wiggle {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   25% {
@@ -393,11 +398,14 @@ label {
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 5px var(--amber);
   }
   50% {
-    box-shadow: 0 0 20px var(--amber), 0 0 30px var(--amber-glow);
+    box-shadow:
+      0 0 20px var(--amber),
+      0 0 30px var(--amber-glow);
   }
 }
 
@@ -551,7 +559,7 @@ label {
 }
 
 .markdown-content pre {
-  background: var(--surface2);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 12px;
@@ -701,7 +709,9 @@ label {
   }
 
   /* Responsive text wrapping on mobile */
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     word-break: break-word;
     overflow-wrap: break-word;
   }

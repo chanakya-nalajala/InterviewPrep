@@ -36,9 +36,7 @@ function Layout({ children }: LayoutProps) {
         }}
       >
         {/* Logo */}
-        <div
-          style={{ display: "flex", alignItems: "center", gap: 8 }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span
             style={{
               fontFamily: "var(--font-display)",
@@ -52,9 +50,7 @@ function Layout({ children }: LayoutProps) {
         </div>
 
         {/* User Menu - Always Visible */}
-        <div
-          style={{ display: "flex", alignItems: "center", gap: 8 }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div
             style={{
               position: "relative",
@@ -87,7 +83,8 @@ function Layout({ children }: LayoutProps) {
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
-                  animation: "revealName 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  animation:
+                    "revealName 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   transformOrigin: "left center",
                 }}
                 className="user-name"
