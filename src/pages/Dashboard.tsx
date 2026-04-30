@@ -366,21 +366,10 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* Overview Stats - Sticky */}
+        {/* Overview Stats */}
         <div
           style={{
-            position: "sticky",
-            top: 54, // Height of the navbar (minHeight: 54 from App.tsx)
-            zIndex: 40, // Below navbar (zIndex: 50) but above content
-            backgroundColor: "var(--bg)",
-            paddingTop: 8,
-            paddingBottom: 12,
             marginBottom: 0,
-            marginLeft: -16,
-            marginRight: -16,
-            paddingLeft: 16,
-            paddingRight: 16,
-            backdropFilter: "blur(10px)",
           }}
         >
           <div
@@ -472,6 +461,17 @@ export default function Dashboard() {
               justifyContent: "space-between",
               marginBottom: selectedCategory || selectedSection ? 0 : 20,
               flexWrap: "wrap",
+              position: "sticky",
+              top: 54,
+              zIndex: 40,
+              background: "rgba(10,10,15,0.9)",
+              backdropFilter: "blur(12px)",
+              padding: "12px 0",
+              marginLeft: -16,
+              marginRight: -16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              borderBottom: "1px solid var(--border)",
             }}
           >
             <Breadcrumb
