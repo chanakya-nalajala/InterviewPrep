@@ -480,7 +480,6 @@ export default function Dashboard() {
             marginRight: -16,
             paddingLeft: 16,
             paddingRight: 16,
-            borderBottom: "1px solid var(--border)",
           }}
         >
           <Breadcrumb
