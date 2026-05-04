@@ -89,12 +89,12 @@ export default function Dashboard() {
       setShowScrollTop(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Get categories and question counts dynamically from JSON
@@ -638,42 +638,41 @@ export default function Dashboard() {
 
       {/* Scroll to Top Button */}
       {showScrollTop && (
-        <div style={{ 
-          position: 'sticky', 
-          bottom: 0, 
-          width: '100%', 
-          display: 'flex', 
-          justifyContent: 'flex-end', 
-          padding: '20px 0',
-          background: 'rgba(10,10,15,0.9)',
-          backdropFilter: 'blur(12px)',
-          marginTop: 20
-        }}>
+        <div
+          style={{
+            position: "sticky",
+            bottom: 0,
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+            padding: "20px 0",
+          }}
+        >
           <button
             onClick={scrollToTop}
             className="btn"
             style={{
               width: 48,
               height: 48,
-              borderRadius: '50%',
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              color: 'var(--text)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.2rem',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              borderRadius: "50%",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              color: "var(--text)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1.2rem",
+              transition: "all 0.2s ease",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--surface2)';
-              e.currentTarget.style.transform = 'scale(1.05)';
+              e.currentTarget.style.background = "var(--surface2)";
+              e.currentTarget.style.transform = "scale(1.05)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--surface)';
-              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.background = "var(--surface)";
+              e.currentTarget.style.transform = "scale(1)";
             }}
             aria-label="Scroll to top"
           >

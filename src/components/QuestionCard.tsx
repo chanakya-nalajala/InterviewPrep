@@ -101,7 +101,7 @@ export function QuestionCard({
             }
           }}
         >
-          <span style={{ fontSize: "0.9rem" }}>{showHint ? "🔓" : "💡"}</span>
+          <span style={{ fontSize: "0.9rem" }}>{showHint ? "🔓" : "🧩"}</span>
           {showHint ? "Hide Hint" : "Show Hint"}
         </button>
 
