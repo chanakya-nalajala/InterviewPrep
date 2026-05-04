@@ -1,6 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import { useProgress } from "../hooks/useProgress";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   CategoryData,
   CategoryStats,
@@ -81,6 +81,21 @@ export default function Dashboard() {
   );
   const [visibleHints, setVisibleHints] = useState<Set<string>>(new Set());
   const [exportingPDF, setExportingPDF] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Scroll to top functionality
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Get categories and question counts dynamically from JSON
   const categories = useMemo(() => getOrganizedCategories(), []);
@@ -620,6 +635,44 @@ export default function Dashboard() {
           />
         )}
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="btn"
+          style={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            color: 'var(--text)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            zIndex: 1000,
+            transition: 'all 0.2s ease',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--surface2)';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'var(--surface)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          aria-label="Scroll to top"
+        >
+          ↑
+        </button>
+      )}
     </div>
   );
 }
